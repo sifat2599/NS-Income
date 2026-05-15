@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transaction History - NS Income</title>
+    <meta name="description" content="NS Income - বাংলাদেশের সেরা ডিজিটাল মার্কেটপ্লেস। জিমেইল ও ফেসবুক অ্যাকাউন্ট সেল করে দ্রুত বিকাশ বা নগদে পেমেন্ট বুঝে নিন।">
+<meta name="keywords" content="NS Income, ns income, ns income netlify, gmail sell bangladesh, facebook account sell bd, earn money online bd">
+<meta name="author" content="Rakibul Hasan SîFåT">
+
+<meta property="og:title" content="NS Income - Premium Digital Marketplace">
+<meta property="og:description" content="নিরাপদে আপনার ডিজিটাল অ্যাকাউন্ট সেল করুন এবং দ্রুত পেমেন্ট বুঝে নিন।">
+<meta property="og:image" content="https://ns-income.netlify.app/logo.png">
+<meta property="og:url" content="https://ns-income.netlify.app">
+<meta property="og:type" content="website">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --primary: #1877f2; --bg: #f3f4f6; }
@@ -102,8 +111,10 @@
         <button class="tab-btn active" onclick="switchTab('all', this)">All</button>
         <button class="tab-btn" onclick="switchTab('facebook', this)">FB Sell</button>
         <button class="tab-btn" onclick="switchTab('gmail', this)">Gmail Sell</button>
+        <button class="tab-btn" onclick="switchTab('refer', this)">Refer Bonus</button>
         <button class="tab-btn" onclick="switchTab('withdraw', this)">Withdrawal</button>
     </div>
+</div>
     <div class="tab-wrapper" style="background: #f9fafb; border-top: 1px solid #eee;">
         <span style="font-size: 12px; color: #6b7280; align-self: center; margin-right: 5px; padding-left: 10px;">Filter:</span>
         <button class="tab-btn active" onclick="filterByDate('all', this)" style="padding: 5px 12px; font-size: 12px;">All Time</button>
@@ -183,137 +194,129 @@
     });
 
     async function setupLiveSystem(uid) {
-        const bonus = 5.00;
-        const balEl = document.getElementById('user-balance');
+    const bonus = 5.00;
+    const balEl = document.getElementById('user-balance');
+    
+    // ১. ইউজারের ডাটা থেকে ছোট আইডি (userId) সংগ্রহ
+    const userDoc = await getDoc(doc(db, "users", uid));
+    const userData = userDoc.exists() ? userDoc.data() : {};
+    const chotoID = userData.userId || "";
+
+    // ২. আর্নিং কুয়েরি (সংশোধিত: রেফার এখন সরাসরি users কালেকশন থেকে)
+    const qG = query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+    const qF = query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+    
+    // রেফারেল কুয়েরি: সরাসরি users থেকে যাদের 'referredBy' তোর ছোট আইডি এবং 'hasSoldFirstAccount' true
+    const qR = query(collection(db, "users"), where("referredBy", "==", chotoID), where("hasSoldFirstAccount", "==", true));
+    
+    // ৩. উইথড্র কুয়েরি
+    const qW = query(collection(db, "withdrawals"), where("userId", "==", chotoID));
+
+    const syncEverything = async () => {
+        const [gs, fs, rs, ws] = await Promise.all([getDocs(qG), getDocs(qF), getDocs(qR), getDocs(qW)]);
+        let g = 0, f = 0, r = 0, totalW = 0;
+        masterData = [];
+
+        // জিমেইল সেলস
+        gs.forEach(d => { let p = Number(d.data().price || 0); g += p; masterData.push({ type: 'gmail', amount: p, status: 'Approved', timestamp: d.data().timestamp, method: 'Gmail Selling' }); });
         
-        // ১. ইউজারের ডাটা থেকে তার ৬-ডিজিটের আইডি (userId) সংগ্রহ করা
-        const userDoc = await getDoc(doc(db, "users", uid));
-        const chotoID = userDoc.exists() ? userDoc.data().userId : "";
-
-        // ২. আর্নিং কুয়েরি (বড় আইডি দিয়ে)
-        const qG = query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
-        const qF = query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
-        const qR = query(collection(db, "referrals"), where("refBy", "==", uid), where("status", "==", "Approved"));
+        // ফেসবুক সেলস
+        fs.forEach(d => { let p = Number(d.data().price || 0); f += p; masterData.push({ type: 'facebook', amount: p, status: 'Approved', timestamp: d.data().timestamp, method: 'FB Selling' }); });
         
-        // ৩. উইথড্র কুয়েরি (ছোট আইডি দিয়ে এবং রিকোয়েস্ট দিলেই যাতে হিস্ট্রিতে আসে)
-        const qW = query(collection(db, "withdrawals"), where("userId", "==", chotoID));
-
-        const syncEverything = async () => {
-            const [gs, fs, rs, ws] = await Promise.all([getDocs(qG), getDocs(qF), getDocs(qR), getDocs(qW)]);
-            let g = 0, f = 0, r = 0, totalW = 0;
-            masterData = [];
-
-            // জিমেইল সেলস
-            gs.forEach(d => { let p = Number(d.data().price || 0); g += p; masterData.push({ type: 'gmail', amount: p, status: 'Approved', timestamp: d.data().timestamp, method: 'Gmail Selling' }); });
-            
-            // ফেসবুক সেলস
-            fs.forEach(d => { let p = Number(d.data().price || 0); f += p; masterData.push({ type: 'facebook', amount: p, status: 'Approved', timestamp: d.data().timestamp, method: 'FB Selling' }); });
-            
-            // রেফার বোনাস
-            rs.forEach(d => { let p = Number(d.data().amount || 0); r += p; masterData.push({ type: 'refer', amount: p, status: 'Approved', timestamp: d.data().timestamp, method: 'Refer Bonus' }); });
-            
-            // উইথড্রয়াল লজিক (উইথড্র ফাইলে যেভাবে দিয়েছিলাম)
-            ws.forEach(d => {
-                let p = Number(d.data().amount || 0);
-                let currentStatus = d.data().status || 'Pending';
-                
-                // উইথড্র রিকোয়েস্ট দিলেই ব্যালেন্স থেকে মাইনাস হবে (Pending + Success সব)
-                totalW += p;
-                
-                masterData.push({
-                    type: 'withdraw',
-                    amount: p,
-                    status: currentStatus,
-                    timestamp: d.data().timestamp,
-                    method: (d.data().method || 'Withdraw') + ' Withdrawal',
-                    number: d.data().number || 'N/A'
-                });
-            });
-
-            // ৪. ফাইনাল ব্যালেন্স আপডেট
-            if(balEl) balEl.innerText = (bonus + g + f + r - totalW).toFixed(2);
-            
-            masterData.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-            applyFilters();
-        };
-
-        // রিয়েল টাইম অটোমেশন
-        onSnapshot(qW, syncEverything);
-        onSnapshot(qG, syncEverything);
-        onSnapshot(qF, syncEverything);
-        onSnapshot(qR, syncEverything);
-        syncEverything();
-    }
-
-    window.switchTab = (type, btn) => {
-        const parent = btn.parentElement;
-        if(parent) {
-            parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-        currentCat = type;
-        applyFilters(); 
-    }
-
-    window.filterByDate = (days, btn) => {
-        const parent = btn.parentElement;
-        if(parent) {
-            parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-        currentTime = days;
-        applyFilters();
-    }
-
-    function applyFilters() {
-        let filtered = masterData;
-        if (currentCat !== 'all') {
-            if(currentCat === 'withdraw') {
-                filtered = filtered.filter(t => t.type === 'withdraw');
-            } else {
-                filtered = filtered.filter(t => t.type !== 'withdraw' && t.type === currentCat);
-            }
-        }
-        
-        if (currentTime !== 'all') {
-            const now = Math.floor(Date.now() / 1000);
-            const limit = now - (currentTime * 24 * 60 * 60);
-            filtered = filtered.filter(t => (t.timestamp?.seconds || 0) >= limit);
-        }
-        renderHTML(filtered);
-    }
-
-    function renderHTML(data) {
-        const container = document.getElementById('transaction-list');
-        if (!container) return;
-        
-        if (data.length === 0) {
-            container.innerHTML = '<div class="empty-state">কোনো রেকর্ড পাওয়া যায়নি।</div>';
-            return;
-        }
-        
-        let html = "";
-        data.forEach(t => {
-            const isW = t.type === 'withdraw';
-            const statusClass = (t.status === 'Success' || t.status === 'Approved') ? 'status-success' : 'status-pending';
-            const date = t.timestamp ? new Date(t.timestamp.seconds * 1000).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Pending';
-            
-            html += `<div class="transaction-item" style="border-left: 4px solid ${isW ? '#ef4444' : '#10b981'};">
-                <div class="tx-info">
-                    <h4>${t.method}</h4>
-                    <p>${date}</p>
-                    ${isW && t.number ? `<p style="color:#1877f2; font-weight:bold; font-size:12px;">${t.number}</p>` : ''}
-                </div>
-                <div style="text-align:right;">
-                    <div style="font-weight:800; color:${isW ? '#ef4444' : '#10b981'}; font-size:15px;">
-                        ${isW ? '-' : '+'} ৳${Number(t.amount).toFixed(2)}
-                    </div>
-                    <span class="status-box ${statusClass}">${t.status}</span>
-                </div>
-            </div>`;
+        // রেফার বোনাস (সরাসরি মেম্বার সংখ্যা গুণ ৫)
+        rs.forEach(d => { 
+            let p = 5; // ফিক্সড ৫ টাকা বোনাস
+            r += p; 
+            masterData.push({ type: 'refer', amount: p, status: 'Approved', timestamp: d.data().timestamp || null, method: 'Refer Bonus', userName: d.data().name || 'Member' }); 
         });
-        container.innerHTML = html;
+        
+        // উইথড্রয়াল লজিক
+        ws.forEach(d => {
+            let p = Number(d.data().amount || 0);
+            let currentStatus = d.data().status || 'Pending';
+            totalW += p;
+            masterData.push({ type: 'withdraw', amount: p, status: currentStatus, timestamp: d.data().timestamp, method: (d.data().method || 'Withdraw') + ' Withdrawal', number: d.data().number || 'N/A' });
+        });
+
+        // ৪. ফাইনাল ব্যালেন্স আপডেট (বোনাস + জি + এফ + রেফার - উইথড্র)
+        if(balEl) balEl.innerText = (bonus + g + f + r - totalW).toFixed(2);
+        
+        masterData.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+        applyFilters();
+    };
+
+    onSnapshot(qW, syncEverything);
+    onSnapshot(qG, syncEverything);
+    onSnapshot(qF, syncEverything);
+    onSnapshot(qR, syncEverything);
+    syncEverything();
+}
+// বাটন কাজ করার জন্য এই ফাংশনটি নিচে যোগ করে দিলাম
+window.switchTab = (type, btn) => {
+    const parent = btn.parentElement;
+    if(parent) {
+        parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
     }
+    currentCat = type; // এখানে ক্যাটাগরি সেট হচ্ছে
+    applyFilters(); 
+};
+
+// applyFilters এ 'refer' ক্যাটগরির সাপোর্ট যোগ করা হয়েছে
+function applyFilters() {
+    let filtered = masterData;
+    if (currentCat !== 'all') {
+        if(currentCat === 'withdraw') {
+            filtered = filtered.filter(t => t.type === 'withdraw');
+        } else if(currentCat === 'refer') {
+            filtered = filtered.filter(t => t.type === 'refer');
+        } else {
+            filtered = filtered.filter(t => t.type !== 'withdraw' && t.type === currentCat);
+        }
+    }
+    
+    if (currentTime !== 'all') {
+        const now = Math.floor(Date.now() / 1000);
+        const limit = now - (currentTime * 24 * 60 * 60);
+        filtered = filtered.filter(t => (t.timestamp?.seconds || 0) >= limit);
+    }
+    renderHTML(filtered);
+}
+
+// renderHTML এ রেফার মেম্বারের নাম দেখানোর জন্য সামান্য আপডেট
+function renderHTML(data) {
+    const container = document.getElementById('transaction-list');
+    if (!container) return;
+    
+    if (data.length === 0) {
+        container.innerHTML = '<div class="empty-state">কোনো রেকর্ড পাওয়া যায়নি।</div>';
+        return;
+    }
+    
+    let html = "";
+    data.forEach(t => {
+        const isW = t.type === 'withdraw';
+        const isR = t.type === 'refer';
+        const statusClass = (t.status === 'Success' || t.status === 'Approved') ? 'status-success' : 'status-pending';
+        const date = t.timestamp ? new Date(t.timestamp.seconds * 1000).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Success';
+        
+        html += `<div class="transaction-item" style="border-left: 4px solid ${isW ? '#ef4444' : (isR ? '#3b82f6' : '#10b981')};">
+            <div class="tx-info">
+                <h4>${t.method}</h4>
+                <p>${date}</p>
+                ${isR && t.userName ? `<p style="color:#6b7280; font-size:11px;">User: ${t.userName}</p>` : ''}
+                ${isW && t.number ? `<p style="color:#1877f2; font-weight:bold; font-size:12px;">${t.number}</p>` : ''}
+            </div>
+            <div style="text-align:right;">
+                <div style="font-weight:800; color:${isW ? '#ef4444' : '#10b981'}; font-size:15px;">
+                    ${isW ? '-' : '+'} ৳${Number(t.amount).toFixed(2)}
+                </div>
+                <span class="status-box ${statusClass}">${t.status}</span>
+            </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
 
     window.openSupportModal = function() {
         document.getElementById('supportModal').style.display = 'flex';
