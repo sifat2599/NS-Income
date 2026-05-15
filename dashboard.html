@@ -5,6 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NS Income - Premium Marketplace</title>
+    <meta name="description" content="NS Income - বাংলাদেশের সেরা ডিজিটাল মার্কেটপ্লেস। জিমেইল ও ফেসবুক অ্যাকাউন্ট সেল করে দ্রুত বিকাশ বা নগদে পেমেন্ট বুঝে নিন।">
+    <meta name="keywords" content="NS Income, ns income, ns income netlify, gmail sell bangladesh, facebook account sell bd, earn money online bd">
+    <meta name="author" content="Rakibul Hasan SîFåT">
+
+    <meta property="og:title" content="NS Income - Premium Digital Marketplace">
+    <meta property="og:description" content="নিরাপদে আপনার ডিজিটাল অ্যাকাউন্ট সেল করুন এবং দ্রুত পেমেন্ট বুঝে নিন।">
+    <meta property="og:image" content="https://ns-income.netlify.app/logo.png">
+    <meta property="og:url" content="https://ns-income.netlify.app">
+    <meta property="og:type" content="website">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background-color: #f3f4f6; color: #1f2937; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
@@ -79,23 +88,6 @@
             transition: 0.3s;
             }
 
-        .marketplace-container {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .market-card {
-            background: white;
-            padding: 20px;
-            border-radius: 24px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            border: 1px solid #f3f4f6;
-            }
 
         .icon-box {
             width: 45px;
@@ -218,8 +210,11 @@
     </div>
 </div>
     </div>
-  
-    <a id="logoutBtn" style="color: #ef4444; font-weight: bold;"><i class="fa-solid fa-right-from-bracket"></i> &nbsp; Logout</a>
+    <a onclick="location.href='index.html'"
+    style=" bold;border-top: 1px dashed #adcfff;"><i class="fa-solid fa-house-chimney"></i> &nbsp; Main Home Page</a>
+    
+    
+    <a id="logoutBtn" style="color: #ef4444; font-weight: bold; "><i class="fa-solid fa-right-from-bracket"></i> &nbsp; Logout</a>
     <div style="padding: 20px; text-align: center;">
         <div class="sidebar2-version">VERSION 2.5.0</div>
     </div>
@@ -235,10 +230,15 @@
         <div class="notif-dot" id="notif-dot"></div>
     </div>
     
-    <div id="notifPanel" style="display: none; position: absolute; right: 10px; top: 55px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; width: 260px; z-index: 3000; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
-        <div style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #111827;">নোটিফিকেশন</div>
-        <div style="padding: 15px; font-size: 13px;">আমাদের জিমেইল বাইয়িং সার্ভিস এখন চালু আছে!</div>
+    <div id="notifPanel" style="display: none; position: absolute; right: 10px; top: 55px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; width: 260px; z-index: 3000; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden;">
+    <div style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #111827; background: #f9fafb; display: flex; justify-content: space-between; align-items: center;">
+        <span>নোটিফিকেশন</span>
     </div>
+    
+    <div id="notifList" style="max-height: 300px; overflow-y: auto;">
+        <div style="padding: 15px; font-size: 13px; color: #6b7280; text-align: center;">কোনো নোটিফিকেশন আসে নি !</div>
+    </div>
+</div>
 </div>
 
 <div class="notice-container">
@@ -292,45 +292,13 @@
 </div>
     </div>
 
-    <div class="marketplace-container">
-        <div class="market-card">
-            <div class="icon-box" style="background: #eff6ff; color: #3b82f6;">
-                <i class="fa-solid fa-user"></i>
-            </div>
-            <div class="card-title">Total User </div>
-            <div class="card-subtitle">1986 People</div>
-        </div>
 
-        <div class="market-card">
-            <div class="icon-box" style="background: #f0fdf4; color: #22c55e;">
-                <i class="fa-solid fa-wallet"></i>
-            </div>
-            <div class="card-title">Total Income</div>
-            <div class="card-subtitle">547589 TK</div>
-        </div>
-
-        <div class="market-card">
-            <div class="icon-box" style="background: #fdf4ff; color: #a855f7;">
-                <i class="fa-solid fa-money-bill-transfer"></i>
-            </div>
-            <div class="card-title">Total Withdraw</div>
-            <div class="card-subtitle">508592 TK</div>
-        </div>
-
-        <div class="market-card">
-            <div class="icon-box" style="background: #fff7ed; color: #f97316;">
-                <i class="fa-solid fa-bag-shopping"></i>
-            </div>
-            <div class="card-title">Daily Volume</div>
-            <div class="card-subtitle">৳ 45,000+</div>
-        </div>
-    </div>
 
     <div class="advice-card">
     <h4 style="color: #1f2937; font-size: 16px; font-weight: 800; margin-bottom: 10px;">
         <i class="fa-solid fa-handshake"></i> Why Trust Us? / কেন আমাদের বিশ্বাস করবেন?
     </h4>
-    <p style="font-size: 13px; color: #4b5563; line-height: 1.6;">
+    <p style="font-size: 14px; color: #4b5563; line-height: 1.6;">
         We have been operating with integrity and trust for over 2 years. Every account you submit is manually verified, and funds are added to your wallet immediately upon approval. <br><br>
         আমরা দীর্ঘ ২ বছর ধরে বিশ্বস্ততার সাথে কাজ করছি। আপনার দেওয়া প্রতিটি অ্যাকাউন্ট ম্যানুয়ালি চেক করা হয় এবং অনুমোদনের সাথে সাথে আপনার ওয়ালেটে টাকা যুক্ত করে দেওয়া হয়।
     </p>
@@ -377,7 +345,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, onSnapshot, collection, query, where, getDocs, updateDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     
     const firebaseConfig = {
         apiKey: "AIzaSyAvhcU9ODN-v0BJj4_vYCbjrTi6jpMM8Hk",
@@ -399,82 +367,95 @@
     });
     
     async function setupIndexAutomation(uid) {
-        onSnapshot(doc(db, "users", uid), async (docSnap) => {
-            if (docSnap.exists()) {
-                const userData = docSnap.data();
-                const chotoID = userData.userId || "";
-                
-                if (document.getElementById('sidebarName')) document.getElementById('sidebarName').innerText = userData.name;
-                if (document.getElementById('user-id')) document.getElementById('user-id').innerText = chotoID;
-                
-                // ১. কুয়েরি সেটআপ
-                const qGmail = query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
-                const qFB = query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
-                const qRefer = query(collection(db, "referrals"), where("refBy", "==", uid), where("status", "==", "Approved"));
-                
-                // উইথড্র কুয়েরি (ডুপ্লিকেট ডাটা হ্যান্ডেল করার জন্য ডাবল কুয়েরি)
-                const qW1 = query(collection(db, "withdrawals"), where("userId", "==", chotoID));
-                const qW2 = query(collection(db, "uid", "==", uid));
-                
-                const updateUI = async () => {
-                    try {
-                        const [gS, fS, rS, wS1, wS2] = await Promise.all([
-                            getDocs(qGmail), getDocs(qFB), getDocs(qRefer), getDocs(qW1), getDocs(qW2)
-                        ]);
-                        
-                        let income = 0;
-                        gS.forEach(d => income += Number(d.data().price || 0));
-                        fS.forEach(d => income += Number(d.data().price || 0));
-                        rS.forEach(d => income += Number(d.data().amount || 0));
-                        
-                        let totalWithdrawMinus = 0;
-                        let successWithdrawOnly = 0;
-                        let seenDocs = new Set();
-                        
-                        // সব উইথড্রাল প্রসেস করা (Pending + Success)
-                        const allWithdraws = [...wS1.docs, ...wS2.docs];
-                        allWithdraws.forEach(d => {
-                            if (!seenDocs.has(d.id)) {
-                                seenDocs.add(d.id);
-                                const amt = Number(d.data().amount || 0);
-                                totalWithdrawMinus += amt; // ব্যালেন্স থেকে সব মাইনাস হবে
-                                if (d.data().status === "Success") {
-                                    successWithdrawOnly += amt; // বক্সে শুধু Success বাড়বে
-                                }
-                            }
-                        });
-                        
-                        let startBonus = 5.00;
-                        const totalLifetime = startBonus + income;
-                        const currentBalance = totalLifetime - totalWithdrawMinus;
-                        
-                        // স্ক্রিনে ব্যালেন্স আপডেট
-                        const balanceIDs = ['user-balance', 'user-balance-stat', 'display-balance', 'nav-balance'];
-                        balanceIDs.forEach(id => {
-                            const el = document.getElementById(id);
-                            if (el) el.innerText = "৳" + currentBalance.toFixed(2);
-                        });
-                        
-                        // স্ট্যাটিসটিকস আপডেট
-                        if (document.getElementById('lifetime-income'))
-                            document.getElementById('lifetime-income').innerText = totalLifetime.toFixed(2);
-                        if (document.getElementById('total-withdrawn-display'))
-                            document.getElementById('total-withdrawn-display').innerText = "৳" + successWithdrawOnly.toFixed(2);
-                        if (document.getElementById('bounce-balance'))
-                            document.getElementById('bounce-balance').innerText = "5.00";
-                        
-                    } catch (e) { console.error("Balance calculation error:", e); }
-                };
-                
-                // রিয়েল টাইম অটোমেশন লিসেনার
-                onSnapshot(qGmail, updateUI);
-                onSnapshot(qFB, updateUI);
-                onSnapshot(qRefer, updateUI);
-                onSnapshot(qW1, updateUI);
-                updateUI();
+    onSnapshot(doc(db, "users", uid), async (docSnap) => {
+        if (docSnap.exists()) {
+            const userData = docSnap.data();
+            const chotoID = userData.userId || ""; // তোর নিজের ছোট আইডি (যেমন: NBBLOM)
+            // --- EIKHANE BOSABI (New Automation) ---
+        if (userData.hasSoldFirstAccount !== true) {
+            const gCheck = await getDocs(query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved")));
+            const fCheck = await getDocs(query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved")));
+            
+            if (!gCheck.empty || !fCheck.empty) {
+                await updateDoc(doc(db, "users", uid), { hasSoldFirstAccount: true });
+                console.log("Status Auto-Updated: hasSoldFirstAccount is now true");
             }
-        });
-    }
+        }
+            
+            if (document.getElementById('sidebarName')) document.getElementById('sidebarName').innerText = userData.name;
+            if (document.getElementById('user-id')) document.getElementById('user-id').innerText = chotoID;
+            
+            // ১. কুয়েরি সেটআপ
+            const qGmail = query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+            const qFB = query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+            
+            // এখানে userData.userId ব্যবহার করা হয়েছে কারণ রেফারেল ডাটাবেসে ছোট আইডি-তে সেভ হচ্ছে
+            const qRefer = query(
+                collection(db, "users"), 
+                where("referredBy", "==", chotoID), 
+                where("hasSoldFirstAccount", "==", true)
+            );
+            
+            const qW1 = query(collection(db, "withdrawals"), where("userId", "==", chotoID));
+            const qW2 = query(collection(db, "withdrawals"), where("userId", "==", uid)); 
+            
+            const updateUI = async () => {
+                try {
+                    const [gS, fS, rS, wS1, wS2] = await Promise.all([
+                        getDocs(qGmail), getDocs(qFB), getDocs(qRefer), getDocs(qW1), getDocs(qW2)
+                    ]);
+                    
+                    let income = 0;
+                    gS.forEach(d => income += Number(d.data().price || 0));
+                    fS.forEach(d => income += Number(d.data().price || 0));
+                    
+                    // ২. রেফার ইনকাম ক্যালকুলেশন (৫ টাকা করে)
+                    let referIncome = rS.size * 5; 
+                    
+                    let totalWithdrawMinus = 0;
+                    let successWithdrawOnly = 0;
+                    let seenDocs = new Set();
+                    
+                    const allWithdraws = [...wS1.docs, ...wS2.docs];
+                    allWithdraws.forEach(d => {
+                        if (!seenDocs.has(d.id)) {
+                            seenDocs.add(d.id);
+                            const amt = Number(d.data().amount || 0);
+                            totalWithdrawMinus += amt; 
+                            if (d.data().status === "Success") {
+                                successWithdrawOnly += amt; 
+                            }
+                        }
+                    });
+                    
+                    let startBonus = 5.00;
+                    // মেইন ক্যালকুলেশন: বোনাস + সেল + রেফার
+                    const totalLifetime = startBonus + income + referIncome;
+                    const currentBalance = totalLifetime - totalWithdrawMinus;
+                    
+                    // স্ক্রিনে ব্যালেন্স আপডেট
+                    const balanceIDs = ['user-balance', 'user-balance-stat', 'display-balance', 'nav-balance'];
+                    balanceIDs.forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.innerText = "৳" + currentBalance.toFixed(2);
+                    });
+                    
+                    if (document.getElementById('lifetime-income'))
+                        document.getElementById('lifetime-income').innerText = totalLifetime.toFixed(2);
+                    if (document.getElementById('total-withdrawn-display'))
+                        document.getElementById('total-withdrawn-display').innerText = "৳" + successWithdrawOnly.toFixed(2);
+                    
+                } catch (e) { console.error("Balance Error:", e); }
+            };
+            
+            onSnapshot(qGmail, updateUI);
+            onSnapshot(qFB, updateUI);
+            onSnapshot(qRefer, updateUI);
+            onSnapshot(qW1, updateUI);
+            updateUI();
+        }
+    });
+}
     
     document.getElementById('logoutBtn').onclick = () => { if (confirm("লগআউট করতে চান?")) signOut(auth); };
     
@@ -521,14 +502,85 @@
     setInterval(updateClock, 1000); 
     updateClock();
 
-    // Notification Control
-    const notifBtn = document.getElementById('notifBtn');
-    const notifPanel = document.getElementById('notifPanel');
+    // ১. নোটিফিকেশন সিস্টেম মেইন ফাংশন (কাউন্ট এবং লিস্ট আপডেট করবে)
+function setupNotificationSystem(uid) {
+    const qNotif = query(collection(db, "notifications"), where("userId", "==", uid), where("isRead", "==", false));
+    
+    onSnapshot(qNotif, (snap) => {
+        const count = snap.size;
+        const badge = document.getElementById('notification-count');
+        const list = document.getElementById('notifList');
+        
+        if (badge) {
+            badge.innerText = count;
+            badge.style.display = count > 0 ? 'block' : 'none';
+        }
+
+        if (list) {
+            list.innerHTML = "";
+            if (snap.docs.length === 0) {
+                list.innerHTML = `<div style="padding: 20px; font-size: 12px; color: #9ca3af; text-align: center;">নতুন কোনো নোটিফিকেশন নেই</div>`;
+            } else {
+                snap.docs.forEach(notifDoc => {
+                    const data = notifDoc.data();
+                    const item = document.createElement('div');
+                    item.style = "padding: 12px; border-bottom: 1px solid #f3f4f6; cursor: pointer;";
+                    item.innerHTML = `
+                        <div style="font-weight: 600; font-size: 13px; color: #111827;">${data.title}</div>
+                        <div style="font-size: 12px; color: #4b5563; margin-top: 2px;">${data.message}</div>
+                    `;
+                    item.onclick = async () => {
+                        await updateDoc(doc(db, "notifications", notifDoc.id), { isRead: true });
+                    };
+                    list.appendChild(item);
+                });
+            }
+        }
+    });
+}
+
+// ২. অটো নোটিফিকেশন মেকার (উইথড্র সাকসেস হলে নিজে থেকে মেসেজ বানাবে)
+function watchWithdrawalsForNotifications(uid, chotoID) {
+    const qW = query(collection(db, "withdrawals"), where("userId", "==", chotoID));
+    
+    onSnapshot(qW, (snap) => {
+        snap.docChanges().forEach(async (change) => {
+            // যদি কোনো উইথড্রাল ডাটা মডিফাই (Status Success) হয়
+            if (change.type === "modified") {
+                const wData = change.doc.data();
+                
+                // যদি স্ট্যাটাস Success হয় এবং আগে নোটিফিকেশন পাঠানো না হয়ে থাকে
+                if (wData.status === "Success" && wData.notified !== true) {
+                    
+                    // অটোমেটিক মেসেজ মেক করা হচ্ছে
+                    await addDoc(collection(db, "notifications"), {
+                        userId: uid,
+                        title: "Withdrawal Success! ✅",
+                        message: `আপনার ৳${wData.amount} উইথড্র সফল হয়েছে। টাকা আপনার ওয়ালেটে পাঠানো হয়েছে।`,
+                        isRead: false,
+                        timestamp: serverTimestamp()
+                    });
+
+                    // ডুপ্লিকেট মেসেজ বন্ধ করতে উইথড্রাল ডক আপডেট
+                    await updateDoc(doc(db, "withdrawals", change.doc.id), { notified: true });
+                }
+            }
+        });
+    });
+}
+
+// ৩. তোর দেওয়া কন্ট্রোল লজিক
+const notifBtn = document.getElementById('notifBtn');
+const notifPanel = document.getElementById('notifPanel');
+
+if (notifBtn) {
     notifBtn.onclick = function(e) {
         e.stopPropagation();
         notifPanel.style.display = notifPanel.style.display === 'block' ? 'none' : 'block';
     };
-    window.onclick = function() { notifPanel.style.display = 'none'; };
+}
+window.onclick = function() { if(notifPanel) notifPanel.style.display = 'none'; };
+if(notifPanel) notifPanel.onclick = (e) => e.stopPropagation();
 </script>
 
 <iframe src="support.html" style="position:fixed; bottom:30px; right:20px; width:70px; height:280px; border:none; z-index:9999;" scrolling="no"></iframe>
@@ -538,3 +590,75 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
