@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - NS Income</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #ffffff; color: #1e293b; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .auth-box { background: #1f2937; padding: 30px; border-radius: 20px; width: 100%; max-width: 400px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center; border: 1px solid #374151; color: white; }
+        .logo-circle { background: #3b82f6; width: 55px; height: 55px; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: 900; font-size: 22px; box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+        .input-group { position: relative; margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; color: #60a5fa; margin-bottom: 5px; font-weight: bold; margin-left: 5px; }
+        .input-field { position: relative; }
+        .input-field input { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid #374151; background: #111827; color: white; box-sizing: border-box; outline: none; transition: 0.3s; font-size: 14px; }
+        .input-field input:focus { border-color: #3b82f6; }
+        .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9ca3af; }
+        .name-row { display: flex; gap: 10px; }
+        .btn-auth { width: 100%; padding: 14px; background: linear-gradient(90deg, #10b981, #059669); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); transition: 0.3s; }
+        .btn-auth:disabled { background: #4b5563; cursor: not-allowed; }
+        .switch-text { margin-top: 20px; font-size: 14px; color: #9ca3af; }
+        .switch-text a { color: #3b82f6; text-decoration: none; font-weight: bold; }
+
+        /* Success Popup */
+        #welcomeOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999; }
+        .welcome-card { background: white; color: #1e293b; padding: 30px; border-radius: 25px; text-align: center; width: 85%; max-width: 350px; }
+        .welcome-card i { font-size: 50px; color: #10b981; margin-bottom: 15px; }
+        .balance-badge { background: #f0fdf4; color: #15803d; padding: 10px; border-radius: 12px; font-weight: bold; font-size: 18px; margin: 15px 0; border: 1px dashed #10b981; }
+    </style>
+</head>
+<body>
+
+    <div id="welcomeOverlay">
+        <div class="welcome-card">
+            <i class="fas fa-gift"></i>
+            <h2>অভিনন্দন!</h2>
+            <p>রেজিস্ট্রেশন সফল হয়েছে।</p>
+            <div class="balance-badge">বোনাস: ৳৫.০০</div>
+            <button class="btn-auth" onclick="window.location.href='dashboard.html'">ড্যাশবোর্ডে যান</button>
+        </div>
+    </div>
+
+    <div class="auth-box">
+        <div class="logo-circle">NS</div>
+        <span style="font-weight: 900; display: block; margin-bottom: 20px;">INCOME</span>
+        
+        <div class="name-row">
+            <div class="input-group" style="flex: 1;">
+                <label>First Name</label>
+                <div class="input-field"><input type="text" id="regFirstName" placeholder="First Name"></div>
+            </div>
+            <div class="input-group" style="flex: 1;">
+                <label>Last Name</label>
+                <div class="input-field"><input type="text" id="regLastName" placeholder="Last Name"></div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>E-mail Address</label>
+            <div class="input-field"><input type="email" id="regEmail" placeholder="example@mail.com"></div>
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <div class="input-field">
+                <input type="password" id="regPassword" placeholder="••••••••">
+                <span class="toggle-password" onclick="togglePass('regPassword', this)"><i class="fa-solid fa-eye"></i></span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Referral Code (Optional)</label>
+            <div class="input-field"><input type="text" id="regReferral" placeholder="123456"></div>
+        </div>
+        
+        <button class="btn-auth" id="regBtn" type="button" onclick="handleRegister()">REGISTER NOW</button>
+        <div class="switch-text">ইতিমধ্যেই অ্যাকাউন্ট আছে? <a href="login.html">লগইন করুন</a></div>
+    </div>
+
+   <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyAvhcU9ODN-v0BJj4_vYCbjrTi6jpMM8Hk",
+        authDomain: "ns-income-2599.firebaseapp.com",
+        projectId: "ns-income-2599",
+        storageBucket: "ns-income-2599.firebasestorage.app",
+        messagingSenderId: "508656544790",
+        appId: "1:508656544790:web:01536ff89ec4be00749937"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref');
+        const referInput = document.getElementById('regReferral');
+        
+        if (refCode) {
+            referInput.value = refCode;
+            referInput.readOnly = true;
+            referInput.style.background = "#111827";
+            referInput.style.borderColor = "#3b82f6";
+            referInput.style.color = "#3b82f6";
+            referInput.style.fontWeight = "bold";
+        }
+    });
+    
+    window.togglePass = (id, el) => {
+        const input = document.getElementById(id);
+        const icon = el.querySelector('i');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    };
+    
+    window.handleRegister = async () => {
+        const fName = document.getElementById("regFirstName").value.trim();
+        const lName = document.getElementById("regLastName").value.trim();
+        const email = document.getElementById("regEmail").value.trim();
+        const password = document.getElementById("regPassword").value.trim();
+        const referral = document.getElementById("regReferral").value.trim();
+        const btn = document.getElementById("regBtn");
+        
+        if (!fName || !email || !password) {
+            alert("দয়া করে নাম, ইমেইল এবং পাসওয়ার্ড ঘরগুলো পূরণ করুন!");
+            return;
+        }
+        
+        if (password.length < 6) {
+            alert("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে!");
+            return;
+        }
+        
+        btn.innerText = "প্রসেসিং...";
+        btn.disabled = true;
+        
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            const myNewId = user.uid.substring(0, 6).toUpperCase();
+            
+            // ১. নতুন ইউজারের ডাটাবেস এন্ট্রি (users collection)
+            await setDoc(doc(db, "users", user.uid), {
+                uid: user.uid,
+                userId: myNewId,
+                name: fName + " " + lName,
+                email: email,
+                referredBy: referral || null,
+                hasSoldFirstAccount: false,
+                balance: 5.0,
+                referCount: 0,
+                referEarnings: 0,
+                joinDate: new Date().toLocaleDateString('en-GB')
+            });
+            
+            
+            
+            document.getElementById("welcomeOverlay").style.display = "flex";
+            localStorage.setItem("isLoggedIn", "true");
+            
+        } catch (error) {
+            btn.innerText = "REGISTER NOW";
+            btn.disabled = false;
+            if (error.code === 'auth/email-already-in-use') {
+                alert("এই ইমেইলটি দিয়ে ইতিমধ্যে অ্যাকাউন্ট খোলা হয়েছে!");
+            } else {
+                alert("ভুল হয়েছে: " + error.message);
+            }
+        }
+    };
+</script>
+</body>
+</html>

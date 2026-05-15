@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refer & Earn - NS Income</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #1877f2; --bg: #f3f4f6; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding-bottom: 30px; }
+        
+        .header { background: white; padding: 15px 20px; display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        /* 3D Site Name with Icon - Updated to match site-logo */
+        .site-name { 
+            font-size: 22px; 
+            font-weight: 900; 
+            color: #3b82f6 ; /* সাইট লোগোর গ্রিন কালার দেওয়া হলো */
+            position: absolute; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            letter-spacing: 1px; 
+            text-transform: uppercase;
+        /* নিচের শ্যাডোটি লোগোর ৩ডি ইফেক্ট তৈরি করবে */
+            text-shadow: 2px 2px 0px #e5e7eb, 4px 4px 0px #d1d5db;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            }
+
+        .site-name i { 
+            color: #3b82f6 ; /* আইকন কালারও একই রাখা হলো */
+            text-shadow: none; /* আইকনে টেক্সট শ্যাডো কাজ করবে না[cite: 3] */
+            }
+
+        .notice-bar { background: #fee2e2; color: #ef4444; padding: 10px; font-size: 13px; font-weight: 600; overflow: hidden; white-space: nowrap; border-bottom: 1px solid #fecaca; }
+        .notice-text { display: inline-block; animation: scroll-left 15s linear infinite; }
+        @keyframes scroll-left { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        .container { max-width: 450px; margin: 0 auto; padding: 15px; }
+        .refer-card { background: linear-gradient(135deg, #1877f2, #0056b3); color: white; border-radius: 25px; padding: 30px 20px; text-align: center; box-shadow: 0 4px 15px rgba(24, 119, 242, 0.3); margin-top: 10px; }
+        
+        /* লিংকের জন্য আলাদা বক্স */
+        .link-box { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); padding: 10px; border-radius: 12px; margin-top: 15px; font-size: 12px; word-break: break-all; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        
+        .refer-box { background: white; color: #1877f2; padding: 15px; border-radius: 15px; margin: 20px 0; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .refer-code { font-size: 22px; font-weight: 800; letter-spacing: 2px; }
+        .copy-btn { background: #1877f2; color: white; border: none; padding: 8px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .stat-box { background: white; padding: 20px; border-radius: 20px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .stat-val { display: block; font-size: 20px; font-weight: 800; color: #1f2937; }
+        .stat-label { font-size: 11px; color: #9ca3af; text-transform: uppercase; font-weight: 700; }
+
+        /* Referral List Section[cite: 3] */
+        .list-card { background: white; border-radius: 20px; padding: 20px; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .list-title { font-size: 16px; font-weight: 800; color: #1f2937; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .member-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+        .member-info h4 { margin: 0; font-size: 14px; color: #374151; }
+        .member-info p { margin: 2px 0 0; font-size: 11px; color: #9ca3af; }
+        .status-badge { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+        .status-pending { background: #fff7ed; color: #f59e0b; }
+        .status-success { background: #f0fdf4; color: #10b981; }
+
+        .instruction-card { background: white; border-radius: 20px; padding: 20px; margin-top: 20px; }
+        .step { display: flex; gap: 15px; margin-bottom: 15px; }
+        .step-num { background: #eff6ff; color: #1877f2; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; }
+        .step-text { font-size: 13px; color: #4b5563; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <i class="fa-solid fa-arrow-left" onclick="window.location.href='dashboard.html'"></i>
+    <div class="site-name"><i class="fa-solid fa-shield-halved"></i> NS INCOME</div>
+</div>
+
+<div class="notice-bar">
+    <div class="notice-text">📢 প্রতি রেফারে পাবেন ৫ টাকা বোনাস! বোনাস পেতে আপনার বন্ধুকে অবশ্যই একটি সফল সেল সম্পন্ন করতে হবে।</div>
+</div>
+
+<div class="container">
+    <div class="refer-card">
+        <i class="fa-solid fa-gift" style="font-size: 40px; margin-bottom: 10px;"></i>
+        <h2 style="margin:0;">Refer & Earn</h2>
+       <p style="font-size: 13px; color: #ffffff; opacity: 0.9; margin-top: 5px; font-weight: 500;">
+    Invite friends and earn <b>৳5.00</b> bonus! <br>
+    আপনার বন্ধুদের ইনভাইট করুন এবং পান <b>৳৫.০০</b> বোনাস!
+</p>
+        
+        <!-- রেফারেল কোড[cite: 3] -->
+        <div class="refer-box">
+            <span class="refer-code" id="myCode">...</span>
+            <button class="copy-btn" onclick="copyCode()"><i class="fa-regular fa-copy"></i> Code</button>
+        </div>
+
+        <!-- রেফারেল লিংক[cite: 3] -->
+        <div class="link-box">
+            <span id="myLink" style="opacity: 0.8;">Generating link...</span>
+            <i class="fa-solid fa-share-nodes" onclick="copyLink()" style="cursor:pointer; font-size: 16px;"></i>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-box">
+            <span class="stat-val" id="totalRefer">0</span>
+            <span class="stat-label">Successful Refer</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-val" id="referEarnings">৳0.00</span>
+            <span class="stat-label">Refer Income</span>
+        </div>
+    </div>
+
+    <!-- Referral Members List[cite: 3] -->
+    <div class="list-card">
+        <div class="list-title"><i class="fa-solid fa-users-viewfinder"></i> Referral Members</div>
+        <div id="referralList">
+            <p style="text-align:center; color:#9ca3af; font-size:12px;">No members joined yet</p>
+        </div>
+    </div>
+
+   <div class="instruction-card">
+    <h3 style="color: var(--primary); font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">
+        <i class="fa-solid fa-circle-info"></i> How to get Bonus / বোনাস পাওয়ার নিয়ম
+    </h3>
+    
+    <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-desc" style="font-size: 14px; color: #4b5563;">
+            <strong>Share Link:</strong> Share your link. When someone clicks, the code will be <b>automatically</b> applied on the registration page.<br><br>
+            <strong>লিংক শেয়ার:</strong> আপনার লিংক শেয়ার করুন। লিংকে ক্লিক করলে রেজিস্ট্রেশন পেজে কোডটি <b>অটোমেটিক</b> বসে যাবে।
+        </div>
+    </div><br>
+    
+    <div class="step" style="margin-top: 15px;">
+        <div class="step-num">2</div>
+        <div class="step-desc" style="font-size: 14px; color: #4b5563;">
+            <strong>Pending Status:</strong> After your friend creates an account, their status will show as <b>Pending</b>.<br><br>
+            <strong>পেন্ডিং স্ট্যাটাস:</strong> আপনার বন্ধু একাউন্ট খোলার পর তার স্ট্যাটাস <b>Pending</b> দেখাবে।
+        </div>
+    </div><br>
+    
+    <div class="step" style="margin-top: 15px;">
+        <div class="step-num">3</div>
+        <div class="step-desc" style="font-size: 14px; color: #4b5563;">
+            <strong>Automatic Bonus:</strong> When your friend <b>successfully sells</b> their first Gmail/Facebook, ৳5 bonus will be added to your balance and status will be <b>Success</b>.<br><br>
+            <strong>অটোমেটিক বোনাস:</strong> বন্ধু যখন প্রথম জিমেইল/ফেসবুক <b>সফলভাবে সেল</b> করবে, তখন আপনার বোনাস ৫ টাকা <b>অটোমেটিক</b> মেইন ব্যালেন্সে যোগ হবে এবং স্ট্যাটাস <b>Success</b> হবে।
+        </div>
+    </div>
+</div>
+    <div class="instruction-card">
+    <h3 style="color: var(--primary); font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">
+        <i class="fas fa-lightbulb"></i> Tips for More Earnings / বেশি আয়ের উপায়
+    </h3>
+    
+    <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-desc" style="font-size: 14px; color: #4b5563;">
+            <strong>Share on Social Media:</strong> Share your referral link on Facebook, WhatsApp, and Telegram groups to get more members.<br><br>
+            <strong>সোশ্যাল মিডিয়ায় শেয়ার:</strong> আপনার রেফারেল লিঙ্কটি ফেসবুক, হোয়াটসঅ্যাপ এবং টেলিগ্রাম গ্রুপে শেয়ার করুন।
+        </div>
+    </div><br>
+
+    <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-desc" style="font-size: 14px; color: #4b5563;">
+            <strong>Invite Friends Directly:</strong> Direct messages to friends have a 5x higher success rate than public posts.<br><br>
+            <strong>সরাসরি আমন্ত্রণ:</strong> বন্ধুদের সরাসরি ইনবক্সে মেসেজ দিলে মেম্বার হওয়ার সম্ভাবনা ৫ গুণ বেশি থাকে।
+        </div>
+    </div><br>
+</div>
+
+<div class="instruction-card">
+    <h3 style="color: var(--primary); font-size: 18px; margin-bottom: 15px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">
+        <i class="fas fa-question-circle"></i> FAQ / সাধারণ জিজ্ঞাসা
+    </h3>
+    
+    <div style="margin-bottom: 15px;">
+        <p style="font-size: 14px; font-weight: 600; margin-bottom: 4px; color: #1f2937;">Q: When will I get my bonus? / আমি কখন বোনাস পাব?</p>
+        <p style="font-size: 13px; color: #6b7280; line-height: 1.4;">Ans: As soon as your friend completes their first successful account sale. <br>/ আপনার বন্ধু যখন প্রথম সফলভাবে অ্যাকাউন্ট বিক্রি করবে, তখনই বোনাস পাবেন।</p>
+    </div><br>
+
+    <div>
+        <p style="font-size: 14px; font-weight: 600; margin-bottom: 4px; color: #1f2937;">Q: Is there any referral limit? / রেফারেলের কি কোনো সীমা আছে?</p>
+        <p style="font-size: 13px; color: #6b7280; line-height: 1.4;">Ans: No, you can invite unlimited friends and earn unlimited!<br> / না, আপনি আনলিমিটেড বন্ধুদের আমন্ত্রণ জানাতে পারবেন এবং আনলিমিটেড আয় করতে পারবেন!</p>
+    </div>
+</div>
+
+<div style="padding: 15px; text-align: center; color: #dc2626; font-size: 13px; background: #fee2e2; border-radius: 12px; margin: 20px 0; border: 1px dashed #f87171;">
+    <i class="fas fa-exclamation-triangle"></i> 
+    <strong>Warning:</strong> Creating multiple accounts by yourself to get referral bonus will result in a permanent ban.<br>
+    <strong>সতর্কতা:</strong> নিজে নিজে একাধিক অ্যাকাউন্ট খুলে রেফার বোনাস নেওয়ার চেষ্টা করলে আপনার অ্যাকাউন্ট চিরস্থায়ীভাবে ব্যান করা হবে।
+</div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, collection, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAvhcU9ODN-v0BJj4_vYCbjrTi6jpMM8Hk",
+        authDomain: "ns-income-2599.firebaseapp.com",
+        projectId: "ns-income-2599",
+        storageBucket: "ns-income-2599.firebasestorage.app",
+        messagingSenderId: "508656544790",
+        appId: "1:508656544790:web:01536ff89ec4be00749937"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // ইউজারের নিজস্ব তথ্য লোড করা
+            onSnapshot(doc(db, "users", user.uid), (snap) => {
+                if (snap.exists()) {
+                    const data = snap.data();
+                    // যদি userId না থাকে তবে uid এর প্রথম ৬ অক্ষর রেফার কোড হিসেবে কাজ করবে
+                    const code = data.userId || user.uid.substring(0, 6).toUpperCase();
+                    
+                    document.getElementById('myCode').innerText = code;
+                    // রেফারেল লিংকে এখন অটোমেটিক ডোমেইন নেম সেট হবে
+                    document.getElementById('myLink').innerText = window.location.origin + "/register.html?ref=" + code;
+                    
+                    // সাকসেসফুল রেফার এবং ইনকাম ডাটাবেস থেকে রিয়েলটাইম আসবে
+                    document.getElementById('totalRefer').innerText = data.referCount || 0;
+                    document.getElementById('referEarnings').innerText = "৳" + (data.referEarnings || 0).toFixed(2);
+
+                    // রেফারেল মেম্বারদের লিস্ট লোড করার অটোমেশন
+                    loadReferralList(code);
+                }
+            });
+        }
+    });
+
+    function loadReferralList(myCode) {
+        // এই কুয়েরিটি অটোমেটিক খুঁজে বের করবে কারা তোমার কোড ব্যবহার করেছে
+        const q = query(collection(db, "users"), where("referredBy", "==", myCode));
+        
+        onSnapshot(q, (snapshot) => {
+            const listDiv = document.getElementById('referralList');
+            
+            if (snapshot.empty) {
+                listDiv.innerHTML = `<p style="text-align:center; color:#9ca3af; font-size:12px;">No members joined yet</p>`;
+                return;
+            }
+            
+            listDiv.innerHTML = "";
+            snapshot.forEach(doc => {
+                const member = doc.data();
+                
+                // অটোমেশন লজিক: প্রথম সেল সফল হলে স্ট্যাটাস Success হবে
+                const isSuccess = member.hasSoldFirstAccount === true;
+                const statusClass = isSuccess ? "status-success" : "status-pending";
+                const statusText = isSuccess ? "Success" : "Pending";
+
+                listDiv.innerHTML += `
+                    <div class="member-item">
+                        <div class="member-info">
+                            <h4>${member.name || 'User'}</h4>
+                            <p>Joined: ${member.joinDate || 'Recently'}</p>
+                        </div>
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    window.copyCode = () => {
+        const code = document.getElementById('myCode').innerText;
+        navigator.clipboard.writeText(code).then(() => alert("Referral Code Copied!"));
+    };
+
+window.copyLink = async () => {
+    const link = document.getElementById('myLink').innerText;
+    const shareData = {
+        title: 'NS Income',
+        text: 'Join NS Income and start earning money! My Referral Link:',
+        url: link
+    };
+    
+    try {
+        // ১. অটোমেটিক ক্লিপবোর্ডে কপি হবে
+        await navigator.clipboard.writeText(link);
+        
+        // ২. মোবাইল বা পিসি-র নেটিভ শেয়ার অপশন ওপেন হবে (FB, WhatsApp, Insta...)
+        if (navigator.share) {
+            await navigator.share(shareData);
+        } else {
+            // শেয়ার সাপোর্ট না করলে শুধু অ্যালার্ট দিবে
+            alert("Referral Link Copied!");
+        }
+    } catch (err) {
+        console.log("Error sharing:", err);
+        // ক্লিপবোর্ড ফেল করলে ম্যানুয়ালি কপি করার চেষ্টা
+        alert("Referral Link Copied!");
+    }
+};
+</script>
+
+<footer style="padding: 30px; text-align: center; color: blue; font-size: 14px;">
+    &copy; 2026 NS Income <br> Developed by Rakibul Hasan SîFåT
+</footer>
+<iframe src="support.html" style="position:fixed; bottom:30px; right:20px; width:70px; height:280px; border:none; z-index:9999;" scrolling="no"></iframe>
+</body>
+</html>
+
+

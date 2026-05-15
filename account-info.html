@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings - NS Income</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { --primary: #1877f2; --bg: #f3f4f6; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding-bottom: 30px; }
+        
+        .header { background: white; padding: 15px 20px; display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .site-name { font-size: 22px; font-weight: 900; color: #3b82f6; position: absolute; left: 50%; transform: translateX(-50%); letter-spacing: 1px; text-transform: uppercase; text-shadow: 2px 2px 0px #e5e7eb, 4px 4px 0px #d1d5db; display: flex; align-items: center; gap: 8px; }
+        .site-name i { color: #3b82f6; text-shadow: none; }
+
+        .notice-bar { background: #fee2e2; color: #ef4444; padding: 10px; font-size: 13px; font-weight: 600; overflow: hidden; white-space: nowrap; border-bottom: 1px solid #fecaca; }
+        .notice-text { display: inline-block; animation: scroll-left 15s linear infinite; }
+        @keyframes scroll-left { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        .container { max-width: 450px; margin: 0 auto; padding: 15px; }
+        .page-heading { text-align: center; margin: 20px 0; color: #1877f2; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .page-heading h2 { margin: 0; font-size: 22px; font-weight: 800; }
+
+        .profile-header-card { background: white; border-radius: 30px; padding: 40px 20px; text-align: center; box-shadow: 0 2px 15px rgba(0,0,0,0.02); margin-top: 10px; position: relative; }
+        
+        /* Profile Image Container */
+        .user-head-icon { width: 110px; height: 110px; background: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 4px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; overflow: hidden; }
+        .user-head-icon i#default-avatar { font-size: 55px; color: #d1d5db; position: relative; z-index: 1; }
+        .user-head-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: none; position: absolute; top: 0; left: 0; z-index: 2; }
+        
+        .camera-label { position: absolute; bottom: 0; right: 0; background: var(--primary); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid white; cursor: pointer; z-index: 5; }
+
+        .user-details h2 { margin: 0; font-size: 20px; font-weight: 800; color: #1f2937; }
+        .user-details p { margin: 5px 0 12px; font-size: 13px; color: #9ca3af; }
+        .id-badge { background: #f8fafc; padding: 5px 15px; border-radius: 20px; font-size: 11px; font-weight: 700; color: #9ca3af; display: inline-flex; align-items: center; gap: 8px; border: 1px solid #f1f5f9; }
+
+        .balance-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+        .bal-box { padding: 20px 10px; border-radius: 20px; text-align: center; }
+        .bal-green { background: #f0fdf4; border: 1px solid #dcfce7; }
+        .bal-orange { background: #fffaf0; border: 1px solid #ffedd5; }
+        .bal-title { font-size: 10px; font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 8px; }
+        .bal-val { font-size: 18px; font-weight: 800; color: #111827; }
+
+        .edit-form-card { background: white; border-radius: 25px; padding: 25px; margin-top: 20px; box-shadow: 0 2px 15px rgba(0,0,0,0.02); }
+        .field-group { margin-bottom: 18px; }
+        .field-label { display: block; font-size: 11px; font-weight: 800; color: #9ca3af; text-transform: uppercase; margin-bottom: 8px; }
+        .input-box { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #f1f5f9; background: #f8fafc; font-size: 14px; box-sizing: border-box; font-weight: 600; color: #1f2937; }
+        .locked { background: #f1f5f9; color: #9ca3af; cursor: not-allowed; }
+
+        .update-btn { width: 100%; padding: 16px; border-radius: 15px; border: none; background: #000; color: white; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <i class="fa-solid fa-arrow-left" onclick="window.location.href='dashboard.html'"></i>
+    <div class="site-name"><i class="fa-solid fa-shield-halved"></i> NS INCOME</div>
+</div>
+
+<div class="notice-bar">
+    <div class="notice-text">📢 আপনার প্রোফাইল তথ্য আপডেট করুন এবং সঠিক নম্বর প্রদান নিশ্চিত করুন।</div>
+</div>
+
+<div class="container">
+    <div class="page-heading">
+        <i class="fa-solid fa-user-gear"></i>
+        <h2>Your Profile</h2>
+    </div>
+
+    <div class="profile-header-card">
+        <div class="user-head-icon">
+            <i class="fa-solid fa-user" id="default-avatar"></i>
+            <img src="" id="user-img">
+            <label for="file-input" class="camera-label">
+                <i class="fa-solid fa-camera"></i>
+            </label>
+            <input type="file" id="file-input" style="display:none;" accept="image/*">
+        </div>
+
+        <div class="user-details">
+            <h2 id="name-display">Loading...</h2>
+            <p id="email-display">Loading...</p>
+            <p style="font-size: 11px; color: #10b981; font-weight: bold; margin-top: -5px; margin-bottom: 10px;">
+                Joined: <span id="join-date-display">...</span>
+            </p>
+            <div class="id-badge">
+                User ID: <span id="id-display">...</span>
+                <i class="fa-regular fa-copy" onclick="copyID()" style="cursor:pointer; color:var(--primary);"></i>
+            </div>
+        </div>
+
+        <div class="balance-section">
+            <div class="bal-box bal-green">
+                <span class="bal-title" style="color:#10b981;">Total Balance</span>
+                <span class="bal-val" id="main-balance">Loading...</span>
+            </div>
+            <div class="bal-box bal-orange">
+                <span class="bal-title" style="color:#f59e0b;">Total Withdraw</span>
+                <span class="bal-val" id="total-withdraw">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="edit-form-card">
+        <div class="field-group">
+            <label class="field-label">Full Name</label>
+            <input type="text" id="input-name" class="input-box">
+        </div>
+        <div class="field-group">
+            <label class="field-label">Email Address (Locked)</label>
+            <input type="text" id="input-email" class="input-box locked" disabled>
+        </div>
+        <div class="field-group">
+            <label class="field-label">Phone Number</label>
+            <input type="tel" id="input-phone" class="input-box" placeholder="01XXXXXXXXX">
+        </div>
+        <div class="field-group">
+            <label class="field-label">Update Password</label>
+            <input type="password" id="input-pass" class="input-box" placeholder="নতুন পাসওয়ার্ড দিন">
+        </div>
+
+        <button class="update-btn" id="update-btn" onclick="saveChanges()">
+            <i class="fa-solid fa-circle-check"></i> Update Account Details
+        </button>
+    </div>
+</div>
+<div style="margin: 20px 15px; background: #f0f7ff; border-radius: 15px; padding: 20px; border-left: 5px solid #1877f2;">
+    <h4 style="margin: 0 0 15px; color: #1877f2; font-size: 16px;">
+        <i class="fas fa-edit"></i> Edit Your Profile Information
+    </h4>
+    
+    <div style="margin-bottom: 15px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 600; color: #333;">1. Change Display Name (নাম পরিবর্তন)</p>
+        <p style="margin: 3px 0 0; font-size: 13px; color: #555;">
+            You can update your name anytime. Make sure to use your real name for payment verification. <br>
+            <i>আপনি যেকোনো সময় আপনার নাম পরিবর্তন করতে পারবেন। পেমেন্ট ভেরিফিকেশনের জন্য আসল নাম ব্যবহার করুন।</i>
+        </p>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <p style="margin: 0; font-size: 14px; font-weight: 600; color: #333;">2. Update Password (পাসওয়ার্ড পরিবর্তন)</p>
+        <p style="margin: 3px 0 0; font-size: 13px; color: #555;">
+            To change your password, enter your new password and confirm it. Choose a strong password for security. <br>
+            <i>পাসওয়ার্ড পরিবর্তন করতে নতুন পাসওয়ার্ড দিয়ে কনফার্ম করুন। নিরাপত্তার জন্য শক্তিশালী পাসওয়ার্ড ব্যবহার করুন।</i>
+        </p>
+    </div>
+    
+    <div>
+        <p style="margin: 0; font-size: 14px; font-weight: 600; color: #333;">3. Phone Number (ফোন নম্বর)</p>
+        <p style="margin: 3px 0 0; font-size: 13px; color: #555;">
+            If you need to change your registered phone number, please contact our support team. <br>
+            <i>আপনার রেজিস্টার্ড ফোন নম্বর পরিবর্তন করতে চাইলে দয়া করে আমাদের সাপোর্ট টিমে যোগাযোগ করুন।</i>
+        </p>
+    </div>
+    
+    <div style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed #adcfff; font-size: 12px; color: #1877f2; font-style: italic;">
+        * After editing, don't forget to click the **'Update Account Details'** button. <br>
+        * এডিট করার পর অবশ্যই **'Update Account Details'** বাটনে ক্লিক করতে ভুলবেন না।
+    </div>
+</div>
+<div style="background: white; padding: 20px; border-radius: 12px; margin: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 5px solid #1877f2;">
+    <h2 style="color: #1877f2; margin-top: 0; font-size: 18px;">
+        <i class="fas fa-user-shield"></i> Account Details & Security
+    </h2>
+    
+    <p style="font-size: 14px; color: #4b5563; line-height: 1.6; margin-bottom: 10px;">
+        Manage your profile details, update your password, and keep your account secure. Your information is always encrypted and safe with us.
+    </p>
+    
+    <p style="font-size: 14px; color: #1f2937; font-weight: 500; border-top: 1px solid #eee; padding-top: 10px;">
+        আপনার প্রোফাইল ডিটেইলস ম্যানেজ করুন এবং অ্যাকাউন্ট সুরক্ষিত রাখুন। আপনার সকল তথ্য আমাদের কাছে সবসময় নিরাপদ।
+    </p>
+
+    <div style="display: flex; gap: 10px; margin-top: 15px;">
+        <span style="background: #eef2ff; color: #4338ca; padding: 5px 10px; border-radius: 5px; font-size: 12px;">
+            <i class="fas fa-lock"></i> Secured
+        </span>
+        <span style="background: #f0fdf4; color: #15803d; padding: 5px 10px; border-radius: 5px; font-size: 12px;">
+            <i class="fas fa-check-circle"></i> Verified
+        </span>
+    </div>
+</div>
+
+<div style="margin: 20px 15px; background: #ffffff; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #e1e8ed;">
+    
+    <div style="background: #f8f9fa; padding: 12px 20px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-shield-alt" style="color: #1877f2; font-size: 18px;"></i>
+        <h4 style="margin: 0; color: #333; font-size: 16px;">Security Tips & Instructions</h4>
+    </div>
+
+    <div style="padding: 20px;">
+        
+        <div style="margin-bottom: 18px; display: flex; gap: 12px;">
+            <div style="min-width: 24px; height: 24px; background: #e7f3ff; color: #1877f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">1</div>
+            <div>
+                <p style="margin: 0; font-size: 14px; color: #1c1e21; font-weight: 600;">Never share your password.</p>
+                <p style="margin: 2px 0 0; font-size: 13px; color: #606770;">আপনার পাসওয়ার্ড বা ওটিপি কারো সাথে শেয়ার করবেন না।</p>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 18px; display: flex; gap: 12px;">
+            <div style="min-width: 24px; height: 24px; background: #e7f3ff; color: #1877f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">2</div>
+            <div>
+                <p style="margin: 0; font-size: 14px; color: #1c1e21; font-weight: 600;">One Device, One Account.</p>
+                <p style="margin: 2px 0 0; font-size: 13px; color: #606770;">একটি ডিভাইসে একাধিক অ্যাকাউন্ট ব্যবহার করা থেকে বিরত থাকুন।</p>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 18px; display: flex; gap: 12px;">
+            <div style="min-width: 24px; height: 24px; background: #e7f3ff; color: #1877f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">3</div>
+            <div>
+                <p style="margin: 0; font-size: 14px; color: #1c1e21; font-weight: 600;">Official Support Only.</p>
+                <p style="margin: 2px 0 0; font-size: 13px; color: #606770;">যেকোনো প্রয়োজনে শুধুমাত্র অফিশিয়াল সাপোর্ট টেলিগ্রাম বা হোয়াটসঅ্যাপে যোগাযোগ করুন।</p>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+            <div style="min-width: 24px; height: 24px; background: #e7f3ff; color: #1877f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">4</div>
+            <div>
+                <p style="margin: 0; font-size: 14px; color: #1c1e21; font-weight: 600;">Fair Usage Policy.</p>
+                <p style="margin: 2px 0 0; font-size: 13px; color: #606770;">সাইটে কোনো ভুল তথ্য বা ফেক অ্যাকাউন্ট ব্যবহার করলে আপনার আইডি ব্যান হতে পারে।</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div style="background: #fff8e1; padding: 12px; text-align: center; font-size: 12px; color: #856404; font-weight: 500;">
+        <i class="fas fa-exclamation-triangle"></i> Rules strictly follow না করলে পেমেন্ট পেতে সমস্যা হতে পারে।
+    </div>
+</div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, collection, query, where, updateDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAvhcU9ODN-v0BJj4_vYCbjrTi6jpMM8Hk",
+        authDomain: "ns-income-2599.firebaseapp.com",
+        projectId: "ns-income-2599",
+        storageBucket: "ns-income-2599.firebasestorage.app",
+        messagingSenderId: "508656544790",
+        appId: "1:508656544790:web:01536ff89ec4be00749937"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const storage = getStorage(app);
+    let currentUser = null;
+
+    function toEnglishDate(dateStr) {
+        if (!dateStr) return "Recent";
+        return dateStr.replace(/[০-৯]/g, d => "০১২৩৪৫৬৭৮৯".indexOf(d));
+    }
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            setupProfileAutomation(user.uid);
+        } else {
+            window.location.href = 'index.html';
+        }
+    });
+
+    async function setupProfileAutomation(uid) {
+    onSnapshot(doc(db, "users", uid), async (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            const chotoID = data.userId || "";
+            
+            // ১. প্রোফাইল ডিটেইলস সেট করা (Joining Date & Email Fix)
+            if (document.getElementById('id-display')) document.getElementById('id-display').innerText = chotoID;
+            if (document.getElementById('join-date-display')) document.getElementById('join-date-display').innerText = toEnglishDate(data.joinDate);
+            if (document.getElementById('name-display')) document.getElementById('name-display').innerText = data.name || "User";
+            if (document.getElementById('email-display')) document.getElementById('email-display').innerText = currentUser.email; // Auth theke email nichhe
+            
+            // ইনপুট বক্স আপডেট
+            if (document.getElementById('input-name')) document.getElementById('input-name').value = data.name || "";
+            if (document.getElementById('input-email')) document.getElementById('input-email').value = currentUser.email;
+            if (document.getElementById('input-phone')) document.getElementById('input-phone').value = data.phone || "";
+            
+            const img = document.getElementById('user-img');
+            const defaultAvatar = document.getElementById('default-avatar');
+            if (data.profilePic && img) {
+                img.src = data.profilePic;
+                img.style.display = 'block';
+                if (defaultAvatar) defaultAvatar.style.display = 'none';
+            }
+            
+            // ২. ব্যালেন্স ও উইথড্র কুয়েরি
+            const qGmail = query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+            const qFB = query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+            const qRefer = query(collection(db, "referrals"), where("refBy", "==", uid), where("hasSoldFirstAccount", "==", "true));
+            
+            // উইথড্র কুয়েরি (userId এবং uid দুইটাই চেক করবে)
+            const qW1 = query(collection(db, "withdrawals"), where("userId", "==", chotoID));
+            const qW2 = query(collection(db, "uid", "==", uid));
+            
+            const updateUI = async () => {
+                try {
+                    const [gS, fS, rS, wS1, wS2] = await Promise.all([
+                        getDocs(qGmail), getDocs(qFB), getDocs(qRefer), getDocs(qW1), getDocs(qW2)
+                    ]);
+                    
+                    let income = 0;
+                    gS.forEach(d => income += Number(d.data().price || 0));
+                    fS.forEach(d => income += Number(d.data().price || 0));
+                    rS.forEach(d => income += Number(d.data().amount || 0));
+                    
+                    let totalWithdrawMinus = 0;
+                    let successWithdrawBox = 0;
+                    let seenDocs = new Set();
+                    
+                    // ডুপ্লিকেট চেক করে উইথড্র ক্যালকুলেশন
+                    const allWithdrawDocs = [...wS1.docs, ...wS2.docs];
+                    allWithdrawDocs.forEach(d => {
+                        if (!seenDocs.has(d.id)) {
+                            seenDocs.add(d.id);
+                            const amt = Number(d.data().amount || 0);
+                            totalWithdrawMinus += amt; // সব উইথড্র ব্যালেন্স থেকে কাটবে
+                            if (d.data().status === "Success") {
+                                successWithdrawBox += amt; // শুধু সাকসেসগুলো বক্সে দেখাবে
+                            }
+                        }
+                    });
+                    
+                    let bonus = 5.00;
+                    const finalBal = (bonus + income) - totalWithdrawMinus;
+                    
+                    // স্ক্রিনে ব্যালেন্স ও উইথড্র সেট করা
+                    const balEl = document.getElementById('main-balance');
+                    if (balEl) balEl.innerText = "৳" + finalBal.toFixed(2);
+                    
+                    const totalWEl = document.getElementById('total-withdraw');
+                    if (totalWEl) totalWEl.innerText = "৳" + successWithdrawBox.toFixed(2);
+                    
+                } catch (err) {
+                    console.error("Sync Error: ", err);
+                }
+            };
+            
+            // রিয়েল টাইম আপডেটের জন্য লিসেনার
+            onSnapshot(qGmail, updateUI);
+            onSnapshot(qFB, updateUI);
+            onSnapshot(qRefer, updateUI);
+            onSnapshot(qW1, updateUI);
+            updateUI();
+        }
+    });
+}
+
+    document.getElementById('file-input').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file || !currentUser) return;
+        alert("ছবি আপলোড হচ্ছে...");
+        const storageRef = ref(storage, `profiles/${currentUser.uid}`);
+        try {
+            const snapshot = await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            await updateDoc(doc(db, "users", currentUser.uid), { profilePic: downloadURL });
+            alert("ছবি সফলভাবে সেট হয়েছে!");
+        } catch (err) { alert("Upload error: " + err.message); }
+    });
+
+    window.saveChanges = async () => {
+        const btn = document.getElementById('update-btn');
+        const name = document.getElementById('input-name').value;
+        const phone = document.getElementById('input-phone').value;
+        const newPass = document.getElementById('input-pass').value;
+        btn.disabled = true; btn.innerText = "Updating...";
+        try {
+            await updateDoc(doc(db, "users", currentUser.uid), { name, phone });
+            if (newPass) await updatePassword(currentUser, newPass);
+            alert("আপডেট হয়েছে!");
+        } catch (e) { alert("Error: " + e.message); }
+        btn.disabled = false; btn.innerText = "Update Account Details";
+    };
+
+    window.copyID = () => {
+        const id = document.getElementById('id-display').innerText;
+        navigator.clipboard.writeText(id).then(() => alert("ID Copied: " + id));
+    };
+</script>
+
+<footer style="padding: 30px; text-align: center; color: blue; font-size: 14px;">
+    &copy; 2026 NS Income <br> Developed by Rakibul Hasan SîFåT
+</footer>
+<iframe src="support.html" style="position:fixed; bottom:30px; right:20px; width:70px; height:280px; border:none; z-index:9999;" scrolling="no"></iframe>
+</body>
+</html>

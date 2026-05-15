@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NS Income - Premium Marketplace</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f3f4f6; color: #1f2937; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
+        
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 1500; backdrop-filter: blur(2px); }
+
+        .header { background: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        /* 3D Site Name with Icon */
+        .site-name { 
+            font-size: 22px; 
+            font-weight: 900; 
+            color: #111827; 
+            position: absolute; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            letter-spacing: 1px; 
+            text-transform: uppercase;
+            text-shadow: 1px 1px 0px #bcbcbc, 2px 2px 0px #9c9c9c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .site-name i { color: #3b82f6; filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.2)); }
+        .site-name span { color: #3b82f6; }
+        
+        .sidebar { height: 100%; width: 0; position: fixed; z-index: 2000; top: 0; left: 0; background-color: white; overflow-x: hidden; transition: 0.4s; box-shadow: 2px 0 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .sidebar-header { background: linear-gradient(135deg, #4e54c8, #8f94fb); padding: 40px 20px 20px 20px; color: white; border-radius: 0 0 20px 0; }
+        .profile-pic-container { width: 85px; height: 85px; border-radius: 50%; background: #ffffff; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; border: 4px solid rgba(255, 255, 255, 0.4); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .profile-pic-container i { font-size: 40px; color: #4e54c8; }
+        .user-stats { font-size: 13px; color: white; opacity: 0.9; display: flex; flex-direction: column; gap: 3px; }
+
+        .sidebar a { padding: 12px 25px; text-decoration: none; font-size: 15px; color: #4b5563; display: flex; align-items: center; border-radius: 10px; margin: 0 10px 5px 10px; transition: 0.3s; cursor: pointer; }
+        .sidebar a:hover { background-color: #f1f5f9; color: #3b82f6; }
+        
+
+        .notice-container { background: rgba(30, 41, 59, 0.8); border-bottom: 1px solid #334155; padding: 10px 0; white-space: nowrap; overflow: hidden; display: flex; align-items: center; }
+        .notice-title { background: #ef4444; color: white; padding: 2px 10px; font-size: 12px; font-weight: bold; border-radius: 0 20px 20px 0; z-index: 10; margin-right: 10px; }
+        .notice-text { display: inline-block; animation: scroll-left 15s linear infinite; font-size: 14px; color: #fbbf24; }
+        @keyframes scroll-left { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        
+        .main-content { padding: 20px; }
+        .status-card { background: linear-gradient(135deg, #4e54c8, #8f94fb); color: white; padding: 25px; border-radius: 20px; text-align: center; position: relative; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .card { background: #1f2937; color: white; padding: 25px 15px; border-radius: 18px; text-align: center; border: 1px solid #374151; transition: 0.3s; cursor: pointer; }
+        .card:hover { transform: translateY(-5px); border-color: #3b82f6; }
+        .market-btn { background: linear-gradient(90deg, #f59e0b, #d97706); color: #000; padding: 18px; border-radius: 15px; text-align: center; font-weight: 800; display: block; text-decoration: none; }
+       
+      
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }      
+      
+        /* সাইডবার ভার্সন স্টাইল */
+        .sidebar2-version {
+            font-size: 12px;
+            font-weight: 700;
+            color: #9ca3af; 
+            background: #f3f4f6; 
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 18px;
+            letter-spacing: 1px;
+            border: 1px solid #e5e7eb;
+            text-transform: uppercase;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+
+        .sidebar2-version:hover {
+            color: #1877f2;
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            transition: 0.3s;
+            }
+
+        .marketplace-container {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .market-card {
+            background: white;
+            padding: 20px;
+            border-radius: 24px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 1px solid #f3f4f6;
+            }
+
+        .icon-box {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 5px;
+            }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+            }
+        
+        .card-subtitle {
+            font-size: 14px;
+            color: #9ca3af;
+           }
+        
+        .floating-chat {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #22c55e;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+            cursor: pointer;
+            z-index: 9999;
+            }
+        .advice-card { background: white; padding: 15px; border-radius: 15px; border-left: 5px solid #15803d; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .advice-card h4 { margin: 0 0 10px 0; color: #15803d; display: flex; align-items: center; gap: 8px; }
+        .advice-card p { font-size: 13px; line-height: 1.6; color: #4b5563; margin: 0; }
+        .ns-sidebar-group { width: 100%; border-bottom: 1px solid #f1f5f9; margin-bottom: 5px; }
+        .ns-sidebar-main { display: flex; justify-content: space-between; align-items: center; padding: 12px 25px; cursor: pointer; border-radius: 10px; margin: 0 10px; transition: 0.3s; color: #4b5563; font-size: 15px; }
+        .ns-sidebar-main:hover { background-color: #f1f5f9; color: #3b82f6; }
+        .ns-main-left { display: flex; align-items: center; }
+        .ns-dropdown-content { display: none; background: #f8fafc; margin: 0 15px 5px 15px; border-radius: 10px; animation: nsFadeIn 0.3s ease; }
+        
+/* NS Support Sub-link Perfect Alignment */
+.ns-sub-link { 
+    display: flex; 
+    align-items: center; 
+    padding: 10px 25px; 
+    text-decoration: none; 
+    font-size: 14px; 
+    font-weight: 600; 
+    border-radius: 8px;
+    transition: 0.2s;
+    margin: 2px 10px;
+}
+
+.ns-sub-link i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px; /* ফিক্সড উইথ যা সব আইকনকে একই লাইনে রাখবে */
+    margin-right: 12px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.ns-sub-link:hover {
+    background: #f1f5f9;
+}
+        .ns-chev-icon { font-size: 12px; transition: 0.3s; color: #9ca3af; }
+        @keyframes nsFadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div id="overlay" class="overlay" onclick="closeNav()"></div>
+  
+<div id="mySidebar" class="sidebar">
+    <div class="sidebar-header">
+        <div class="profile-pic-container"><i class="fa-solid fa-user"></i></div>
+        <h3 id="sidebarName" style="margin:0;">Loading...</h3>
+        <div class="user-stats">
+            <span><i class="fa-solid fa-user-tag"></i> ID: <span id="user-id">...</span></span>
+            <span><i class="fa-solid fa-wallet"></i> Balance: <span id="user-balance-stat">...</span></span>
+        </div>
+    </div>
+    
+    <p style="padding-left:25px; font-size:11px; font-weight:bold; color:#9ca3af; text-transform:uppercase; margin: 15px 0 10px;">Main Menu</p>
+    <a onclick="closeNav()" style="background:#f1f5f9; color:#3b82f6;"><i class="fa-solid fa-house"></i> &nbsp; Dashboard</a>
+    <a onclick="location.href='account-info.html'"><i class="fa-solid fa-user-gear"></i> &nbsp; Account Profile</a>
+    <a onclick="location.href='gmail-sell.html'"><i class="fa-solid fa-envelope"></i> &nbsp; Gmail Sell</a>
+    <a onclick="location.href='facebook-sell.html'"><i class="fa-brands fa-facebook"></i> &nbsp; Facebook Sell</a>
+    <a onclick="location.href='withdrawal.html'"><i class="fa-solid fa-wallet"></i> &nbsp; Withdrawal</a>
+    <a onclick="openHistory()"><i class="fa-solid fa-history"></i> &nbsp; Transaction History</a>
+    <a onclick="location.href='referral.html'"><i class="fa-solid fa-users"></i> &nbsp; Referral</a>
+    <div class="ns-sidebar-group">
+        <div class="ns-sidebar-main" onclick="toggleSidebarSupport()">
+            <div class="ns-main-left">
+                <i class="fa-solid fa-headset"></i>
+                <span>&nbsp; Support Center</span>
+            </div>
+            <i class="fas fa-chevron-down ns-chev-icon" id="ns-support-chev"></i>
+        </div>
+        
+        <div id="ns-support-list" class="ns-dropdown-content" style="display: none; background: #f8fafc; border-radius: 12px; margin: 5px 15px;">
+    <a href="https://t.me/nsincomesupportbot" target="_blank" class="ns-sub-link" style="color: #0088cc;">
+        <i class="fab fa-telegram-plane"></i> <span>Telegram Support</span>
+    </a>
+    <a href="https://wa.me/8801912766091" target="_blank" class="ns-sub-link" style="color: #25D366;">
+        <i class="fab fa-whatsapp"></i> <span>WhatsApp Support</span>
+    </a>
+    <div onclick="openSupportMail()" class="ns-sub-link" style="color: #EA4335; cursor: pointer;">
+        <i class="fas fa-envelope"></i> <span>Gmail Support</span>
+    </div>
+</div>
+    </div>
+  
+    <a id="logoutBtn" style="color: #ef4444; font-weight: bold;"><i class="fa-solid fa-right-from-bracket"></i> &nbsp; Logout</a>
+    <div style="padding: 20px; text-align: center;">
+        <div class="sidebar2-version">VERSION 2.5.0</div>
+    </div>
+</div>
+
+<div class="header">
+    <i class="fa-solid fa-bars" onclick="openNav()" style="font-size: 22px; cursor: pointer; color: #4b5563;"></i>
+    <div class="site-name">
+        <i class="fa-solid fa-shield-halved"></i>  <span>NS INCOME</span>
+    </div>
+    <div id="notifBtn" style="position: relative; cursor: pointer; padding: 5px;">
+        <i class="fa-solid fa-bell" style="font-size: 22px; color: #4b5563;"></i>
+        <div class="notif-dot" id="notif-dot"></div>
+    </div>
+    
+    <div id="notifPanel" style="display: none; position: absolute; right: 10px; top: 55px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; width: 260px; z-index: 3000; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+        <div style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: bold; color: #111827;">নোটিফিকেশন</div>
+        <div style="padding: 15px; font-size: 13px;">আমাদের জিমেইল বাইয়িং সার্ভিস এখন চালু আছে!</div>
+    </div>
+</div>
+
+<div class="notice-container">
+    <div class="notice-title">NOTICE</div>
+    <div class="notice-text">📢 NS Income-এ স্বাগতম! জিমেইল ও ফেসবুক সেল দিয়ে পেমেন্ট বুঝে নিন সরাসরি বিকাশ বা নগদে।</div>
+</div>
+
+<div class="main-content">
+    <div class="status-card" onclick="location.href='account-info.html'" style="cursor:pointer;">
+        <div style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 15px; font-size: 12px;">🟢 Admin Online</div>
+        <p style="font-size: 20px; margin-bottom: 10px;">Total Balance</p>
+        <h1 style="font-size: 40px; margin: 0;"> <span id="user-balance">Loading...</span></h1>
+        <div style="margin-top: 15px; font-size: 13px; opacity: 0.9; background: rgba(0,0,0,0.1); padding: 8px; border-radius: 10px;">
+            📅 <span id="live-date">...</span> | 🕒 <span id="live-clock">...</span>
+        </div>
+    </div>
+
+    <a href="#" class="market-btn" onclick="alert('মার্কেট এখন আপডেট হচ্ছে!')">🚀 LIVE MARKET দেখুন</a>
+
+    <div class="grid">
+       <div class="card" onclick="location.href='gmail-sell.html'" style="border-top: 4px solid #ef4444;">
+    <div style="font-size: 35px; margin-bottom: 10px;">
+        <i class="fab fa-google" style="color: #ea4335;"></i>
+    </div>
+    <div style="font-weight:600;">Gmail Sell</div>
+</div>
+        <div class="card" onclick="location.href='facebook-sell.html'" style="border-top: 4px solid #3b82f6; cursor: pointer;">
+            <div style="font-size: 35px; margin-bottom: 10px; color: #1877F2;">
+                <i class="fa-brands fa-facebook"></i>
+            </div>
+            <div style="font-weight: 600;">FB Sell</div>
+        </div>
+        <div class="card" onclick="openHistory()" style="border-top: 4px solid #8b5cf6;">
+            <div style="font-size: 35px; margin-bottom: 10px;"><i class="fas fa-history" style="color: #8b5cf6;"></i> </div>
+            <div style="font-weight: 600;">Transaction History</div>
+        </div>
+        <div class="card" onclick="location.href='withdrawal.html'" style="border-top: 4px solid #10b981;">
+            <div style="font-size: 35px; margin-bottom: 10px;"><i class="fas fa-wallet" style="color: #10b981;"></i> </div>
+            <div style="font-weight: 600;">Withdraw</div>
+        </div>
+        <div class="card" onclick="location.href='account-info.html'" style="border-top: 4px solid goldenrod;">
+            <div style="font-size: 35px; margin-bottom: 10px;"><i class="fas fa-user-gear" style="color: goldenrod;"></i> </div>
+            <div style="font-weight: 600;">Account Profile</div>
+        </div>
+<div class="card" onclick="location.href='referral.html'" style="border-top: 4px solid #3b82f6; cursor: pointer;">
+    <!-- রেফারেলের জন্য এখানে fa-users (ইউজার গ্রুপ) আইকন ব্যবহার করা হয়েছে -->
+    <div style="font-size: 35px; margin-bottom: 10px; color: #1877F2;">
+        <i class="fa-solid fa-users"></i>
+    </div>
+    <div style="font-weight: 600;">Refer</div>
+</div>
+    </div>
+
+    <div class="marketplace-container">
+        <div class="market-card">
+            <div class="icon-box" style="background: #eff6ff; color: #3b82f6;">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="card-title">Total User </div>
+            <div class="card-subtitle">1986 People</div>
+        </div>
+
+        <div class="market-card">
+            <div class="icon-box" style="background: #f0fdf4; color: #22c55e;">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div class="card-title">Total Income</div>
+            <div class="card-subtitle">547589 TK</div>
+        </div>
+
+        <div class="market-card">
+            <div class="icon-box" style="background: #fdf4ff; color: #a855f7;">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+            </div>
+            <div class="card-title">Total Withdraw</div>
+            <div class="card-subtitle">508592 TK</div>
+        </div>
+
+        <div class="market-card">
+            <div class="icon-box" style="background: #fff7ed; color: #f97316;">
+                <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+            <div class="card-title">Daily Volume</div>
+            <div class="card-subtitle">৳ 45,000+</div>
+        </div>
+    </div>
+
+    <div class="advice-card">
+    <h4 style="color: #1f2937; font-size: 16px; font-weight: 800; margin-bottom: 10px;">
+        <i class="fa-solid fa-handshake"></i> Why Trust Us? / কেন আমাদের বিশ্বাস করবেন?
+    </h4>
+    <p style="font-size: 13px; color: #4b5563; line-height: 1.6;">
+        We have been operating with integrity and trust for over 2 years. Every account you submit is manually verified, and funds are added to your wallet immediately upon approval. <br><br>
+        আমরা দীর্ঘ ২ বছর ধরে বিশ্বস্ততার সাথে কাজ করছি। আপনার দেওয়া প্রতিটি অ্যাকাউন্ট ম্যানুয়ালি চেক করা হয় এবং অনুমোদনের সাথে সাথে আপনার ওয়ালেটে টাকা যুক্ত করে দেওয়া হয়।
+    </p>
+</div>
+
+    <div style="margin-top: 30px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
+    <h2 style="font-size: 18px; font-weight: 800; color: #1f2937; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+        <i class="fa-solid fa-user-shield"></i> Data Security / ডাটা নিরাপত্তা
+    </h2>
+    
+    <h3><p style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 10px;">
+        Your data is 100% secure on our platform. / আমাদের প্ল্যাটফর্মে আপনার ডাটা ১০০% সুরক্ষিত।
+    </p></h3>
+    <h5>
+    <ul style="list-style: none; padding: 0; line-height: 1.8; font-size: 13px; color: #4b5563;">
+        <li style="margin-bottom: 12px; border-bottom: 1px solid #f8fafc; padding-bottom: 5px;">
+            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> 
+            The best digital marketplace in BD with secure transactions. / নিরাপদ লেনদেন আর বিশ্বস্ততায় গড়ে তোলা বাংলাদেশের সেরা ডিজিটাল মার্কেটপ্লেস।
+        </li>
+        <li style="margin-bottom: 12px; border-bottom: 1px solid #f8fafc; padding-bottom: 5px;">
+            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> 
+            Ensuring account security and fair market value is our mission. / আপনার ডিজিটাল অ্যাকাউন্টের নিরাপত্তা এবং সঠিক মূল্য নিশ্চিত করাই আমাদের লক্ষ্য।
+        </li>
+        <li style="margin-bottom: 12px; border-bottom: 1px solid #f8fafc; padding-bottom: 5px;">
+            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> 
+            Building trust in digital trading through verified transactions. / যাচাইকৃত লেনদেনের মাধ্যমে ডিজিটাল কেনা-বেচায় আনছি নতুন বিশ্বাস।
+        </li>
+        <li style="margin-bottom: 12px; border-bottom: 1px solid #f8fafc; padding-bottom: 5px;">
+            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> 
+            Sell your accounts securely and receive payments instantly. / নিরাপদে অ্যাকাউন্ট সেল করুন, দ্রুত পেমেন্ট বুঝে নিন।
+        </li>
+        <li style="margin-bottom: 12px; border-bottom: 1px solid #f8fafc; padding-bottom: 5px;">
+            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> 
+            NS Income — The most reliable destination for trusted trading. / বিশ্বস্ত ডিজিটাল লেনদেনের নির্ভরযোগ্য ঠিকানা — NS Income।
+        </li>
+        <li style="margin-bottom: 5px;">
+            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> 
+            Ensuring every transaction is safe, secure, and hassle-free. / আপনার প্রতিটি ট্রানজ্যাকশন হোক নিরাপদ এবং ঝামেলামুক্ত।
+        </li>
+    </ul> </h5>
+</div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyAvhcU9ODN-v0BJj4_vYCbjrTi6jpMM8Hk",
+        authDomain: "ns-income-2599.firebaseapp.com",
+        projectId: "ns-income-2599",
+        storageBucket: "ns-income-2599.firebasestorage.app",
+        messagingSenderId: "508656544790",
+        appId: "1:508656544790:web:01536ff89ec4be00749937"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            setupIndexAutomation(user.uid);
+        } else { window.location.href = 'index.html'; }
+    });
+    
+    async function setupIndexAutomation(uid) {
+        onSnapshot(doc(db, "users", uid), async (docSnap) => {
+            if (docSnap.exists()) {
+                const userData = docSnap.data();
+                const chotoID = userData.userId || "";
+                
+                if (document.getElementById('sidebarName')) document.getElementById('sidebarName').innerText = userData.name;
+                if (document.getElementById('user-id')) document.getElementById('user-id').innerText = chotoID;
+                
+                // ১. কুয়েরি সেটআপ
+                const qGmail = query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+                const qFB = query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+                const qRefer = query(collection(db, "referrals"), where("refBy", "==", uid), where("status", "==", "Approved"));
+                
+                // উইথড্র কুয়েরি (ডুপ্লিকেট ডাটা হ্যান্ডেল করার জন্য ডাবল কুয়েরি)
+                const qW1 = query(collection(db, "withdrawals"), where("userId", "==", chotoID));
+                const qW2 = query(collection(db, "uid", "==", uid));
+                
+                const updateUI = async () => {
+                    try {
+                        const [gS, fS, rS, wS1, wS2] = await Promise.all([
+                            getDocs(qGmail), getDocs(qFB), getDocs(qRefer), getDocs(qW1), getDocs(qW2)
+                        ]);
+                        
+                        let income = 0;
+                        gS.forEach(d => income += Number(d.data().price || 0));
+                        fS.forEach(d => income += Number(d.data().price || 0));
+                        rS.forEach(d => income += Number(d.data().amount || 0));
+                        
+                        let totalWithdrawMinus = 0;
+                        let successWithdrawOnly = 0;
+                        let seenDocs = new Set();
+                        
+                        // সব উইথড্রাল প্রসেস করা (Pending + Success)
+                        const allWithdraws = [...wS1.docs, ...wS2.docs];
+                        allWithdraws.forEach(d => {
+                            if (!seenDocs.has(d.id)) {
+                                seenDocs.add(d.id);
+                                const amt = Number(d.data().amount || 0);
+                                totalWithdrawMinus += amt; // ব্যালেন্স থেকে সব মাইনাস হবে
+                                if (d.data().status === "Success") {
+                                    successWithdrawOnly += amt; // বক্সে শুধু Success বাড়বে
+                                }
+                            }
+                        });
+                        
+                        let startBonus = 5.00;
+                        const totalLifetime = startBonus + income;
+                        const currentBalance = totalLifetime - totalWithdrawMinus;
+                        
+                        // স্ক্রিনে ব্যালেন্স আপডেট
+                        const balanceIDs = ['user-balance', 'user-balance-stat', 'display-balance', 'nav-balance'];
+                        balanceIDs.forEach(id => {
+                            const el = document.getElementById(id);
+                            if (el) el.innerText = "৳" + currentBalance.toFixed(2);
+                        });
+                        
+                        // স্ট্যাটিসটিকস আপডেট
+                        if (document.getElementById('lifetime-income'))
+                            document.getElementById('lifetime-income').innerText = totalLifetime.toFixed(2);
+                        if (document.getElementById('total-withdrawn-display'))
+                            document.getElementById('total-withdrawn-display').innerText = "৳" + successWithdrawOnly.toFixed(2);
+                        if (document.getElementById('bounce-balance'))
+                            document.getElementById('bounce-balance').innerText = "5.00";
+                        
+                    } catch (e) { console.error("Balance calculation error:", e); }
+                };
+                
+                // রিয়েল টাইম অটোমেশন লিসেনার
+                onSnapshot(qGmail, updateUI);
+                onSnapshot(qFB, updateUI);
+                onSnapshot(qRefer, updateUI);
+                onSnapshot(qW1, updateUI);
+                updateUI();
+            }
+        });
+    }
+    
+    document.getElementById('logoutBtn').onclick = () => { if (confirm("লগআউট করতে চান?")) signOut(auth); };
+    
+    window.toggleSidebarSupport = function() {
+        const list = document.getElementById('ns-support-list');
+        const chev = document.getElementById('ns-support-chev');
+        if (list.style.display === 'none' || list.style.display === '') {
+            list.style.display = 'block';
+            if (chev) chev.style.transform = 'rotate(180deg)';
+        } else {
+            list.style.display = 'none';
+            if (chev) chev.style.transform = 'rotate(0deg)';
+        }
+    };
+    
+    window.openSupportMail = function() {
+        window.open('mailto:nsicomesupport@gmail.com?subject=Support%20Request', '_blank');
+    };
+</script>
+
+<script>
+    // Navigation Functions with Scroll Lock
+    function openNav() { 
+        document.getElementById("mySidebar").style.width = "280px"; 
+        document.getElementById("overlay").style.display = "block"; 
+        document.body.style.overflow = "hidden"; // Dashboard scroll lock
+    }
+    
+    function closeNav() { 
+        document.getElementById("mySidebar").style.width = "0"; 
+        document.getElementById("overlay").style.display = "none"; 
+        document.body.style.overflow = "auto"; // Unlock scroll
+    }
+
+    function openHistory() {
+        window.location.href = 'transaction.html'; 
+    }
+
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('live-date').innerText = now.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+        document.getElementById('live-clock').innerText = now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000); 
+    updateClock();
+
+    // Notification Control
+    const notifBtn = document.getElementById('notifBtn');
+    const notifPanel = document.getElementById('notifPanel');
+    notifBtn.onclick = function(e) {
+        e.stopPropagation();
+        notifPanel.style.display = notifPanel.style.display === 'block' ? 'none' : 'block';
+    };
+    window.onclick = function() { notifPanel.style.display = 'none'; };
+</script>
+
+<iframe src="support.html" style="position:fixed; bottom:30px; right:20px; width:70px; height:280px; border:none; z-index:9999;" scrolling="no"></iframe>
+<footer style="padding: 30px; text-align: center; color: blue; font-size: 14px;">
+    &copy; 2026 NS Income <br> Developed by Rakibul Hasan SîFåT
+</footer>
+
+</body>
+</html>

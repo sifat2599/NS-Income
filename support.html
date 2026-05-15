@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { margin: 0; overflow: hidden; background: transparent; }
+        .fab-wrapper { position: fixed; bottom: 10px; right: 10px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .main-fab { background: #1877f2; color: white; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; transition: 0.3s; }
+        .bounce-ani { animation: bounce 2s infinite; }
+        .sub-fab { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; text-decoration: none; transform: scale(0); transition: 0.4s; opacity: 0; }
+        .fab-wrapper.active .sub-fab { transform: scale(1); opacity: 1; }
+        .fab-wrapper.active .main-fab { transform: rotate(135deg); background: #ef4444; }
+        .wp-fab { background: #25D366; } .tg-fab { background: #0088cc; } .gm-fab { background: #EA4335; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-8px);} 60% {transform: translateY(-4px);} }
+    </style>
+</head>
+<body>
+    <div class="fab-wrapper" id="fabWrapper">
+        <a href="mailto:nsincomesupport@gmail.com" target="_blank" class="sub-fab gm-fab"><i class="fa-solid fa-envelope"></i></a>
+        <a href="https://t.me/nsincomesupportbot" target="_blank" class="sub-fab tg-fab"><i class="fa-brands fa-telegram"></i></a>
+        <a href="https://wa.me/8801912766091" target="_blank" class="sub-fab wp-fab"><i class="fa-brands fa-whatsapp"></i></a>
+        <div class="main-fab bounce-ani" onclick="toggleFab()"><i class="fa-solid fa-headset"></i></div>
+    </div>
+    <script>
+        function toggleFab() {
+            document.getElementById('fabWrapper').classList.toggle('active');
+            event.currentTarget.classList.toggle('bounce-ani');
+        }
+    </script>
+</body>
+</html>

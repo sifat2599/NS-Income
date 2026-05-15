@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - NS Income</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #ffffff; color: #1e293b; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-box { background: linear-gradient(145deg, #1f2937, #111827); padding: 35px; border-radius: 25px; width: 90%; max-width: 380px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2); text-align: center; border: 1px solid #374151; color: white; }
+        
+        .input-group { position: relative; margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-size: 13px; color: #60a5fa; margin-bottom: 6px; font-weight: bold; margin-left: 5px; }
+        .input-field { position: relative; }
+        .input-field input { width: 100%; padding: 14px 45px 14px 15px; border-radius: 12px; border: 1px solid #4b5563; background: #1f2937; color: white; box-sizing: border-box; outline: none; transition: 0.3s; }
+        .input-field input:focus { border-color: #3b82f6; background: #111827; }
+        .toggle-password { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #9ca3af; }
+        .btn-auth { width: 100%; padding: 15px; background: linear-gradient(90deg, #3b82f6, #2563eb); border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; font-size: 16px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); transition: 0.3s; text-transform: uppercase; }
+        .logo-circle { background: #3b82f6; width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: white; font-weight: 900; font-size: 26px; box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+        .site-name { font-weight: 900; font-size: 18px; color: #ffffff; letter-spacing: 1px; margin-bottom: 20px; display: block; }
+        .switch-text { margin-top: 25px; font-size: 14px; color: #9ca3af; }
+        .switch-text a { color: #10b981; text-decoration: none; font-weight: bold; }
+        
+        /* Forgot Password link styling */
+        .forgot-link { display: block; text-align: right; margin-top: -10px; margin-bottom: 20px; font-size: 12px; color: #9ca3af; text-decoration: none; transition: 0.3s; }
+        .forgot-link:hover { color: #60a5fa; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-box">
+        <div class="logo-circle">NS</div>
+        <span class="site-name">INCOME</span>
+        
+        <!-- Login Section -->
+        <div id="login-form-ui">
+            <h2 style="margin-bottom: 25px; font-size: 22px;">লগইন করুন</h2>
+            
+            <div class="input-group">
+                <label>Email Address</label>
+                <div class="input-field">
+                    <input type="email" id="emailInput" placeholder="example@mail.com">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <div class="input-field">
+                    <input type="password" id="loginPass" placeholder="••••••••">
+                    <span class="toggle-password" onclick="togglePass('loginPass', this)">
+                        <i class="fa-solid fa-eye"></i>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Forgot Password Button -->
+            <a href="javascript:void(0)" class="forgot-link" onclick="toggleView(true)">Forgot Password?</a>
+            
+            <button id="loginBtn" class="btn-auth">LOGIN</button>
+            
+            <div class="switch-text">
+                অ্যাকাউন্ট নেই? <a href="register.html">নতুন খুলুন</a>
+            </div>
+        </div>
+
+        <!-- Reset Password Section (Hidden initially) -->
+        <div id="reset-form-ui" style="display: none;">
+            <h2 style="margin-bottom: 10px; font-size: 22px;">পাসওয়ার্ড রিসেট</h2>
+            <p style="font-size: 13px; color: #9ca3af; margin-bottom: 25px;">আপনার ইমেইলটি দিন, আমরা রিসেট লিঙ্ক পাঠাবো।</p>
+            
+            <div class="input-group">
+                <label>Email Address</label>
+                <div class="input-field">
+                    <input type="email" id="resetEmailInput" placeholder="example@mail.com">
+                </div>
+            </div>
+            
+            <button id="resetBtn" class="btn-auth" style="background: linear-gradient(90deg, #10b981, #059669); margin-bottom: 15px;">SEND LINK</button>
+            
+            <div class="switch-text">
+                মনে পড়েছে? <a href="javascript:void(0)" onclick="toggleView(false)">ফিরে যান</a>
+            </div>
+        </div>
+        
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAvhcU9ODN-v0BJj4_vYCbjrTi6jpMM8Hk",
+            authDomain: "ns-income-2599.firebaseapp.com",
+            projectId: "ns-income-2599",
+            storageBucket: "ns-income-2599.firebasestorage.app",
+            messagingSenderId: "508656544790",
+            appId: "1:508656544790:web:01536ff89ec4be00749937"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // UI Toggle Function
+        window.toggleView = function(isReset) {
+            document.getElementById('login-form-ui').style.display = isReset ? 'none' : 'block';
+            document.getElementById('reset-form-ui').style.display = isReset ? 'block' : 'none';
+        };
+
+        // পাসওয়ার্ড দেখার লজিক
+        window.togglePass = function(id, el) {
+            const input = document.getElementById(id);
+            const icon = el.querySelector('i');
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        };
+
+        // লগইন ফাংশন
+        document.getElementById('loginBtn').onclick = async () => {
+            const email = document.getElementById('emailInput').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            const btn = document.getElementById('loginBtn');
+
+            if (email === "" || pass === "") {
+                alert("দয়া করে ইমেইল এবং পাসওয়ার্ড দুটিই পূরণ করুন!");
+                return;
+            }
+
+            btn.innerText = "Loading...";
+            btn.disabled = true;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                window.location.href = "dashboard.html"; 
+            } catch (error) {
+                btn.innerText = "LOGIN";
+                btn.disabled = false;
+                if (error.code === 'auth/invalid-credential') {
+                    alert("ইমেইল অথবা পাসওয়ার্ড ভুল!");
+                } else {
+                    alert("লগইন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।");
+                }
+            }
+        };
+
+        // পাসওয়ার্ড রিসেট ইমেইল ফাংশন
+        document.getElementById('resetBtn').onclick = async () => {
+            const email = document.getElementById('resetEmailInput').value.trim();
+            const btn = document.getElementById('resetBtn');
+
+            if (email === "") {
+                alert("দয়া করে আপনার ইমেইলটি দিন!");
+                return;
+            }
+
+            btn.innerText = "Sending...";
+            btn.disabled = true;
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                alert("আপনার ইমেইলে পাসওয়ার্ড রিসেট লিঙ্ক পাঠানো হয়েছে। ইনবক্স অথবা স্প্যাম ফোল্ডার চেক করুন।");
+                toggleView(false); // Reset সফল হলে লগইন ফর্মে ফিরে যাবে
+            } catch (error) {
+                btn.innerText = "SEND LINK";
+                btn.disabled = false;
+                if (error.code === 'auth/user-not-found') {
+                    alert("এই ইমেইল দিয়ে কোনো অ্যাকাউন্ট খুঁজে পাওয়া যায়নি।");
+                } else {
+                    alert("লিঙ্ক পাঠাতে সমস্যা হচ্ছে। আবার চেষ্টা করুন।");
+                }
+            }
+        };
+    </script>
+
+</body>
+</html>

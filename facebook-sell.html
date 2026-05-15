@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Sell - NS Income</title>
+    
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <style>
+        body { background-color: #f3f4f6; color: #1f2937; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 20px; }
+        .header { background: white; padding: 15px 20px; display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header i { font-size: 20px; cursor: pointer; }
+        .site-name { font-size: 22px; font-weight: 900; color: #1877f2; position: absolute; left: 50%; transform: translateX(-50%); letter-spacing: 1px; text-transform: uppercase; text-shadow: 2px 2px 0px #e5e7eb, 4px 4px 0px #d1d5db; display: flex; align-items: center; gap: 8px; }
+        .site-name i { color: #1877f2; text-shadow: none; }
+
+        .notice-bar { background: #fee2e2; color: #ef4444; padding: 10px; font-size: 13px; font-weight: 600; overflow: hidden; white-space: nowrap; border-bottom: 1px solid #fecaca; }
+        .notice-text { display: inline-block; animation: scroll-left 15s linear infinite; }
+        @keyframes scroll-left { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        .container { padding: 15px; max-width: 500px; margin: 0 auto; }
+        
+        .page-heading { text-align: center; margin: 20px 0; color: #1877f2; }
+        .page-heading h2 { margin: 0; font-size: 22px; font-weight: 800; }
+
+        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .status-item { background: white; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #e5e7eb; cursor: pointer; transition: 0.3s; }
+        .status-item:active { transform: scale(0.95); }
+        .status-count { font-size: 20px; font-weight: bold; display: block; }
+        .status-label { font-size: 10px; color: #9ca3af; text-transform: uppercase; font-weight: 600; margin-top: 4px; }
+
+        .btn-sub { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e5e7eb; background: #1877f2; color: white; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
+
+        .modal { display: none; position: fixed; bottom: 0; left: 0; width: 100%; height: 90%; background: white; z-index: 2000; border-radius: 25px 25px 0 0; box-shadow: 0 -5px 25px rgba(0,0,0,0.2); overflow-y: auto; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-header { padding: 20px; background: #1877f2; color: white; border-radius: 25px 25px 0 0; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        .sell-form { padding: 20px; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { font-size: 12px; font-weight: 600; display: block; margin-bottom: 5px; }
+        .input-style { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #e5e7eb; background: #f9fafb; font-size: 14px; box-sizing: border-box; }
+        
+        .type-option { padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; font-weight: 600; font-size: 13px; color: #1f2937; }
+        .type-option.selected { background: #1877f2; color: white; border-color: #1877f2; }
+
+        #historySection { background: white; padding: 15px; border-radius: 15px; margin-top: 10px; display: none; border: 1px solid #e5e7eb; }
+        .history-item { padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4); z-index: 1500; backdrop-filter: blur(2px); }
+        
+        .bulk-section { background: #f8fafc; border: 2px dashed #cbd5e1; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
+        .advice-card { background: white; padding: 15px; border-radius: 15px; border-left: 5px solid #15803d; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .advice-card h4 { margin: 0 0 10px 0; color: #15803d; display: flex; align-items: center; gap: 8px; }
+        .advice-card p { font-size: 13px; line-height: 1.6; color: #4b5563; margin: 0; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <i class="fa-solid fa-arrow-left" onclick="window.location.href='dashboard.html'"></i>
+    <div class="site-name"><i class="fa-solid fa-shield-halved"></i> NS INCOME</div>
+</div>
+
+<div class="notice-bar">
+    <div class="notice-text">📢 আপনার ফেসবুক আইডি নিরাপদ। আমরা পেমেন্ট করার পর আইডি পাসওয়ার্ড পরিবর্তন করে ফেলি। রিপোর্ট এর সময় ১২-২৪ ঘণ্টা ।</div>
+</div>
+
+<div class="container">
+    <div class="page-heading">
+        <h2>Facebook Sell Center</h2>
+        <p>আপনার ফেসবুক আইডি বিক্রি করে দ্রুত পেমেন্ট নিন</p>
+        <p>
+             Report Time 12-24 hours / রিপোর্ট এর সময় ১২-২৪ ঘণ্টা ।
+        </p>
+    </div>
+
+    <div class="status-grid">
+        <div class="status-item" onclick="filterHistory('Approved')">
+            <span class="status-count" id="count-approved" style="color:#10b981;">0</span>
+            <span class="status-label">Approved</span>
+        </div>
+        <div class="status-item" onclick="filterHistory('Rejected')"><span class="status-count" id="count-rejected" style="color: #ef4444">0</span><span class="status-label">Rejected</span></div>
+        <div class="status-item" onclick="filterHistory('Pending')"><span class="status-count" id="count-request" style="color: #f59e0b">0</span><span class="status-label">Request</span></div>
+        <div class="status-item"><span class="status-count" id="user-sell-balance" style="color: #3b82f6">৳0.00</span><span class="status-label">Balance</span></div>
+       
+        </div>
+    
+
+    <button class="btn-sub" onclick="toggleHistory()"><i class="fa-solid fa-history"></i> FB Sell History</button>
+    <button class="btn-sub" style="background:#1877f2;" onclick="openSellModal()"><i class="fa-solid fa-plus"></i> Facebook ID Sell করুন</button>
+
+    <div id="historySection">
+        <h4 style="margin-top:0;" id="historyTitle">আপনার বিক্রয় তালিকা</h4>
+        <div id="historyList"><p style="text-align:center; color:#9ca3af;">Loading...</p></div>
+    </div>
+    <div style="background: #e0f2fe; border-left: 5px solid #0284c7; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+    <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <i class="fa-solid fa-circle-info" style="color: #0284c7; font-size: 20px; margin-top: 3px;"></i>
+        <div>
+            <h4 style="margin: 0 0 5px 0; color: #0369a1; font-size: 16px;">Submission Notice / সাবমিট সময় সংক্রান্ত তথ্য</h4>
+            
+            <p style="margin: 0; font-size: 14px; color: #0c4a6e; font-weight: 600; line-height: 1.6;">
+                If you submit accounts after 10:00 PM, the report and payment will be processed on the following day.<br><br>
+                রাত ১০:০০ টার পর ফেসবুক সাবমিট করলে সেটির রিপোর্ট এবং পেমেন্ট পরবর্তী দিনে প্রদান করা হবে।<br>
+                
+            </p>
+        </div>
+    </div>
+</div>
+        <div style="background: #fff4e5; border-left: 5px solid #ff9800; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+    <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <i class="fa-solid fa-clock" style="color: #ff9800; font-size: 20px; margin-top: 3px;"></i>
+        <div>
+            <h4 style="margin: 0 0 5px 0; color: #e65100; font-size: 16px;">Reporting Time Alert!</h4>
+            
+            <p style="margin: 0; font-size: 14px; color: #5d4037; font-weight: 700; line-height: 1.6;">
+                Reporting time starts from 11:00 PM every night.<br>
+                আমাদের রিপোর্ট টাইম রাত ১১:০০ টা থেকে শুরু হয়।<br>
+                
+                
+            </p>
+        
+        </div>
+    </div>
+</div>
+        <div style="background: #fff4e5; border-left: 5px solid #ff9800; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-family: 'Segoe UI', sans-serif;">
+    <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <i class="fa-solid fa-circle-exclamation" style="color: #ff9800; font-size: 18px; margin-top: 2px;"></i>
+        <div>
+            <h4 style="margin: 0 0 5px 0; color: #e65100; font-size: 15px;"> Attention Please / সতর্কতা!</h4>
+            
+            <p style="margin: 0; font-size: 13px; color: #5d4037; line-height: 1.5; font-weight: 600;">
+                1. Submit new fb accounts only. Incorrect passwords will result in payment rejection.<br>
+                ১. শুধুমাত্র ফ্রেশ ফেসবুক সাবমিট করবেন। পাসওয়ার্ড ভুল হলে পেমেন্ট বাতিল হবে।<br><br>
+                2. Use .xlsx format for bulk file uploads.<br>
+                ২. বাল্ক ফাইল আপলোড করলে অবশ্যই .xlsx ফরম্যাট ব্যবহার করুন।
+            </p>
+            
+           
+        </div>
+    </div>
+</div>
+
+    <div class="advice-card">
+    <h4 style="color: #1f2937; font-size: 16px; font-weight: 800; margin-bottom: 10px;">
+        <i class="fa-solid fa-handshake"></i> Why Trust Us? / কেন আমাদের বিশ্বাস করবেন?
+    </h4>
+    <p style="font-size: 13px; color: #4b5563; line-height: 1.6;">
+        We have been operating with integrity and trust for over 2 years. Every account you submit is manually verified, and funds are added to your wallet immediately upon approval. <br><br>
+        আমরা দীর্ঘ ২ বছর ধরে বিশ্বস্ততার সাথে কাজ করছি। আপনার দেওয়া প্রতিটি অ্যাকাউন্ট ম্যানুয়ালি চেক করা হয় এবং অনুমোদনের সাথে সাথে আপনার ওয়ালেটে টাকা যুক্ত করে দেওয়া হয়।
+    </p>
+</div>
+
+    <div style="margin-top: 30px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
+    <h2 style="font-size: 18px; font-weight: 800; color: #1f2937; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+        <i class="fa-solid fa-user-shield"></i> Data Security / ডাটা নিরাপত্তা
+    </h2>
+    
+    <h3><p style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 10px;">
+        Your data is 100% secure on our platform. / আমাদের প্ল্যাটফর্মে আপনার ডাটা ১০০% সুরক্ষিত।
+    </p></h3>
+    <h5>
+    <ul style="list-style: none; padding: 0; line-height: 1.8; font-size: 13px; color: #4b5563;">
+        <li style="margin-bottom: 12px; border-bottom: 1px solid #f8fafc; padding-bottom: 5px;">
+            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> 
+            The best digital marketplace in BD with secure transactions. / নিরাপদ লেনদেন আর বিশ্বস্ততায় গড়ে তোলা বাংলাদেশের সেরা ডিজিটাল মার্কেটপ্লেস।
+        </li>
+        <li style="margin-bottom: 12px; border-bottom: 1px solid #f8fafc; padding-bottom: 5px;">
+            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> 
+            Ensuring account security and fair market value is our mission. / আপনার ডিজিটাল অ্যাকাউন্টের নিরাপত্তা এবং সঠিক মূল্য নিশ্চিত করাই আমাদের লক্ষ্য।
+        </li>
+        <li style="margin-bottom: 12px; border-bottom: 1px solid #f8fafc; padding-bottom: 5px;">
+            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> 
+            Building trust in digital trading through verified transactions. / যাচাইকৃত লেনদেনের মাধ্যমে ডিজিটাল কেনা-বেচায় আনছি নতুন বিশ্বাস।
+        </li>
+        <li style="margin-bottom: 12px; border-bottom: 1px solid #f8fafc; padding-bottom: 5px;">
+            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> 
+            Sell your accounts securely and receive payments instantly. / নিরাপদে অ্যাকাউন্ট সেল করুন, দ্রুত পেমেন্ট বুঝে নিন।
+        </li>
+        <li style="margin-bottom: 12px; border-bottom: 1px solid #f8fafc; padding-bottom: 5px;">
+            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> 
+            NS Income — The most reliable destination for trusted trading. / বিশ্বস্ত ডিজিটাল লেনদেনের নির্ভরযোগ্য ঠিকানা — NS Income।
+        </li>
+        <li style="margin-bottom: 5px;">
+            <i class="fa-solid fa-check-circle" style="color: #10b981;"></i> 
+            Ensuring every transaction is safe, secure, and hassle-free. / আপনার প্রতিটি ট্রানজ্যাকশন হোক নিরাপদ এবং ঝামেলামুক্ত।
+        </li>
+    </ul> </h5>
+</div>
+</div>
+
+<div id="overlay" class="overlay" onclick="closeSellModal()"></div>
+<div id="sellModal" class="modal">
+    <div class="modal-header">
+        <h3 style="margin:0;">ফেসবুক আইডি জমা দিন</h3>
+        <i class="fa-solid fa-xmark" style="font-size:24px; cursor:pointer;" onclick="closeSellModal()"></i>
+    </div>
+    
+    <div class="sell-form">
+        <div class="bulk-section">
+            <h4 style="margin:0 0 10px 0; font-size: 14px;">Bulk Account Sell / এক্সেল ফাইল দিন (.xlsx)</h4>
+            <input type="file" id="bulk_file" accept=".xlsx" style="display:none;" onchange="handleFileSelection(event)">
+            <button class="btn-sub" style="background:#6366f1; margin:0;" onclick="document.getElementById('bulk_file').click()">
+                <i class="fa-solid fa-file-excel"></i> <span id="file-btn-text">UPLOAD XLSX FILE</span>
+            </button>
+        </div>        
+        
+        <div style="text-align:center; margin-bottom:15px; color:#9ca3af;">— OR —</div>
+        <div style="background: #fff4e5; border-left: 5px solid #ff9800; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-family: 'Segoe UI', sans-serif;">
+    <div style="display: flex; align-items: flex-start; gap: 10px;">
+        <i class="fa-solid fa-shield-halved" style="color: #ff9800; font-size: 20px; margin-top: 3px;"></i>
+        <div>
+            <h4 style="margin: 0 0 8px 0; color: #e65100; font-size: 16px;">ফেসবুক আইডি সাবমিট করার নিয়মাবলী:</h4>
+            
+            <ul style="margin: 0; padding-left: 18px; font-size: 13px; color: #5d4037; line-height: 1.7; font-weight: 600;">
+                <li>সঠিক UID এবং পাসওয়ার্ড প্রদান করুন (পাসওয়ার্ড ভুল হলে পেমেন্ট পাবেন না)।</li>
+                <li>২ ফ্যাক্টর আইডিতে অবশ্যই ২-ফ্যাক্টর (2FA) অথেন্টিকেশন অন থাকতে হবে।</li>
+                <li>কুকিজ আইডিতে সঠিক কুকিজ (Cookies) প্রদান করুন।</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="input-group">
+            <label><i class="fa-solid fa-fingerprint"></i> Facebook UID</label>
+            <input type="text" id="fb_uid" class="input-style" placeholder="1000xxxxxxxxxxx">
+        </div>
+
+        <div class="input-group">
+            <label><i class="fa-solid fa-lock"></i> পাসওয়ার্ড (Password)</label>
+            <input type="password" id="fb_pass" class="input-style" placeholder="আপনার আইডি পাসওয়ার্ড">
+        </div>
+
+        <div class="input-group">
+            <label><i class="fa-solid fa-envelope"></i> মেইল/ Gmail (ঐচ্ছিক)</label>
+            <input type="email" id="fb_mail" class="input-style" placeholder="example@mail.com">
+        </div>
+
+        <div class="input-group" id="box_2fa">
+            <label><i class="fa-solid fa-key"></i> 2FA Code / Backup Codes</label>
+            <input type="text" id="fb_2fa" class="input-style" placeholder="2FA Key অথবা ব্যাকআপ কোড দিন">
+        </div>
+
+        <div class="input-group" id="box_cookies" style="display:none;">
+            <label><i class="fa-solid fa-cookie"></i> Browser Cookies</label>
+            <textarea id="fb_cookies" class="input-style" style="height:80px;" placeholder="আইডির কুকিজ এখানে পেস্ট করুন"></textarea>
+        </div>
+
+        <label style="font-size:12px; font-weight:600;">অ্যাকাউন্ট টাইপ সিলেক্ট করুন</label>
+        <div id="typeOptions" style="margin:10px 0;">
+            <div class="type-option" onclick="selectFbType(this, '2fa')">Number ID (0 Fnd + 2FA) <span>৳4</span></div>
+            <div class="type-option" onclick="selectFbType(this, 'cookies')">PC CLONE 1000xx (Cookies) <span>৳14</span></div>
+            <div class="type-option" onclick="selectFbType(this, 'cookies')">Any Mail/Number (Cookies) <span>৳4.3</span></div>
+        </div>
+
+        <button id="main-submit-btn" class="btn-sub" style="width:100%; padding:15px; background:#1877f2;" onclick="submitFbToMarket()">
+            <i class="fa-solid fa-paper-plane"></i> Submit Account 
+        </button>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot, getDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAvhcU9ODN-v0BJj4_vYCbjrTi6jpMM8Hk",
+        authDomain: "ns-income-2599.firebaseapp.com",
+        projectId: "ns-income-2599",
+        storageBucket: "ns-income-2599.firebasestorage.app",
+        messagingSenderId: "508656544790",
+        appId: "1:508656544790:web:01536ff89ec4be00749937"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    
+    let currentUser = null;
+    let allSales = [];
+    let selectedFile = null;
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) { currentUser = user; loadStats(); }
+        else { window.location.href = 'index.html'; }
+    });
+
+    function loadStats() {
+    const q = query(collection(db, "fb_sales"), where("userId", "==", currentUser.uid));
+    onSnapshot(q, (snapshot) => {
+        let approved = 0, rejected = 0, pending = 0, balance = 0;
+        window.allSales = []; // এখানে নিশ্চিত করো window.allSales ব্যবহার হচ্ছে
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            data.id = doc.id;
+            window.allSales.push(data);
+            
+            if (data.status === "Approved") { 
+                approved++; 
+                balance += (data.price || 0); 
+            } else if (data.status === "Rejected") { 
+                rejected++; 
+            } else { 
+                pending++; 
+            }
+        });
+        
+        document.getElementById('count-approved').innerText = approved;
+        document.getElementById('count-rejected').innerText = rejected;
+        document.getElementById('count-request').innerText = pending;
+        document.getElementById('user-sell-balance').innerText = "৳" + balance.toFixed(2);
+        
+        // রিয়েলটাইম আপডেট
+        if(document.getElementById('historySection').style.display === 'block') {
+            renderHistory(window.allSales);
+        }
+    });
+}
+
+    window.handleFileSelection = (event) => {
+        selectedFile = event.target.files[0];
+        if(selectedFile) {
+            document.getElementById('file-btn-text').innerText = selectedFile.name;
+        }
+    };
+
+    window.submitFbToMarket = async () => {
+        const botToken = '8758007847:AAEghDCcMVIMcyHiKLgmoEb2GlL5RZgf5cQ'; 
+        const chatId = '8448874057'; 
+
+        const typeEl = document.querySelector('.type-option.selected');
+        if(!typeEl) return alert("দয়া করে অ্যাকাউন্ট টাইপ সিলেক্ট করুন!");
+        
+        const type = typeEl.innerText.split('৳')[0].trim();
+        const price = parseInt(typeEl.querySelector('span').innerText.replace('৳', ''));
+
+        const uid = document.getElementById('fb_uid').value.trim();
+        const pass = document.getElementById('fb_pass').value.trim();
+        const mail = document.getElementById('fb_mail').value.trim();
+        const cookies = document.getElementById('fb_cookies').value.trim();
+        const twoFa = document.getElementById('fb_2fa').value.trim();
+
+        const btn = document.getElementById('main-submit-btn');
+        
+// ১. ডাটাবেস থেকে ইউজারের ৬ ডিজিটের অরিজিনাল userId এবং নাম সংগ্রহ করা
+const userRef = doc(db, "users", currentUser.uid);
+const userSnap = await getDoc(userRef);
+let displayUserId = currentUser.uid; // সেফটি হিসেবে ফুল আইডি রাখা হলো
+let uName = "User";
+
+if (userSnap.exists()) {
+    const userData = userSnap.data();
+    // এখান থেকেই সেই ৬ ডিজিটের আইডিটি নেওয়া হচ্ছে
+    displayUserId = userData.userId || currentUser.uid;
+    uName = userData.name || "User";
+}
+
+// সাবমিট লজিক শুরু
+if(selectedFile) {
+    btn.disabled = true;
+    btn.innerText = "Submitting Bulk...";
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, {type: 'array'});
+            const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {header: 1});
+            
+            let count = 0;
+            for(let row of jsonData) {
+                if(!row || row.length < 1) continue;
+              
+                await addDoc(collection(db, "fb_sales"), {
+                    userId: currentUser.uid, 
+                    displayUserId: displayUserId, // ৬ ডিজিটের আইডি সেভ হলো
+                    uid: String(row[0] || ""), 
+                    pass: String(row[1] || ""), 
+                    twoFa: String(row[2] || ""), 
+                    cookies: String(row[3] || ""),
+                    type: type + " (Bulk)", 
+                    price: price, 
+                    status: "Pending", 
+                    timestamp: serverTimestamp()
+                });
+                count++;
+            }
+
+            if(count > 0) {
+                // Bulk এ ৬ ডিজিটের আইডি এবং নাম এড করা হয়েছে
+                const caption = `📁 **New FB Bulk File!**\n\n👤 Name: ${uName}\n📧 Email: ${currentUser.email}\n🆔 User ID: \`${displayUserId}\`\n📦 Type: ${type}\n✅ Total Accounts: ${count}\n📝 File: ${selectedFile.name}`;
+                const formData = new FormData();
+                formData.append('chat_id', chatId);
+                formData.append('document', selectedFile);
+                formData.append('caption', caption);
+                formData.append('parse_mode', 'Markdown');
+                await fetch(`https://api.telegram.org/bot${botToken}/sendDocument`, { method: 'POST', body: formData });
+                
+                alert(`${count} id submit done ✅!`);
+                selectedFile = null;
+                document.getElementById('file-btn-text').innerText = "UPLOAD XLSX FILE";
+                closeSellModal();
+            } else {
+                alert("ফাইলে কোনো আইডি পাওয়া যায়নি!");
+            }
+        } catch (err) { 
+            alert("এরর: " + err.message); 
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Submit";
+        }
+    };
+    reader.readAsArrayBuffer(selectedFile);
+} 
+else if(uid !== "" && pass !== "") {
+    btn.disabled = true;
+    btn.innerText = "Submitting...";
+    try {
+        let credentialSection = "";
+        if (twoFa && twoFa !== "") {
+            credentialSection += `🔐 **2FA/Code:** \`${twoFa}\`\n`;
+        }
+        if (cookies && cookies !== "") {
+            credentialSection += `🍪 **Cookies:** \`${cookies}\`\n`;
+        }
+
+        // Single ID এর জন্য ৬ ডিজিটের আইডি এবং নাম সেট করা হয়েছে
+        const msg = `🔵 **Single FB Account!**\n\n👤 Name: ${uName}\n📧 User: ${currentUser.email}\n🆔 User ID: \`${displayUserId}\`\n\n👤 FB UID: \`${uid}\`\n🔑 Pass: \`${pass}\`\n📧 Mail: \`${mail || 'N/A'}\`\n${credentialSection}\n📦 Type: ${type}\n💰 Price: ৳${price}`;
+        
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: chatId, text: msg, parse_mode: 'Markdown' })
+        }).catch(err => console.log("Telegram notification failed"));
+
+        await addDoc(collection(db, "fb_sales"), {
+            userId: currentUser.uid,
+            displayUserId: displayUserId, // ৬ ডিজিটের আইডি সেভ হলো
+            uid, pass, mail, type, price, cookies, twoFa,
+            status: "Pending", timestamp: serverTimestamp()
+        });
+
+        alert("Submit Done ✅");
+        document.getElementById('fb_uid').value = "";
+        document.getElementById('fb_pass').value = "";
+        document.getElementById('fb_mail').value = "";
+        document.getElementById('fb_cookies').value = "";
+        document.getElementById('fb_2fa').value = "";
+        closeSellModal();
+    } catch (err) {
+        alert("এরর: " + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Submit";
+    }
+} else {
+    alert("দয়া করে ফাইল আপলোড করুন অথবা আইডি পাসওয়ার্ড দিন!");
+}
+};
+
+ window.renderHistory = (dataList) => {
+    const list = document.getElementById('historyList');
+    list.innerHTML = "";
+    if (dataList.length === 0) {
+        list.innerHTML = "<p style='text-align:center;'>কোনো তথ্য পাওয়া যায়নি।</p>";
+        return;
+    }
+    
+    // নতুন সাবমিশনগুলো সবার উপরে দেখানোর জন্য সর্টিং
+    dataList.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+    
+    dataList.forEach(data => {
+        const div = document.createElement('div');
+        div.className = "history-item";
+        
+        const icon = data.status === 'Approved' ? 'fa-circle-check' : (data.status === 'Rejected' ? 'fa-circle-xmark' : 'fa-clock');
+        const color = data.status === 'Approved' ? '#10b981' : (data.status === 'Rejected' ? '#ef4444' : '#f59e0b');
+        
+        // --- সময় ও তারিখ ফরম্যাট করার অংশ ---
+        const timeString = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        }) : "Just now";
+        
+        div.innerHTML = `
+            <div style="flex: 1;">
+                <div style="font-weight:600; font-size:13px; color: #1f2937;">${data.uid || 'Bulk File'}</div>
+                <div style="font-size:11px; color:#6b7280;">Type: ${data.type}</div>
+                <div style="font-size:10px; color:#9ca3af; margin-top: 3px;">
+                    <i class="fa-regular fa-calendar-check" style="font-size: 9px;"></i> ${timeString}
+                </div>
+            </div>
+            <div style="text-align:right;">
+                <i class="fa-solid ${icon}" style="color:${color}; font-size:18px;"></i>
+                <div style="font-size:12px; font-weight:bold; margin-top: 4px;">৳${data.price}</div>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+};
+
+    window.filterHistory = (status) => {
+    const section = document.getElementById('historySection');
+    section.style.display = 'block';
+    document.getElementById('historyTitle').innerText = status + " Accounts List";
+    
+    // ফিল্টার করার সময় window.allSales থেকে ডাটা নাও
+    const filtered = (window.allSales || []).filter(item => item.status === status);
+    renderHistory(filtered);
+    
+    // স্ক্রল করে হিস্ট্রি সেকশনে নিয়ে যাবে
+    section.scrollIntoView({ behavior: 'smooth' });
+};
+</script>
+
+<script>
+    function openSellModal() { 
+        document.getElementById('sellModal').style.display = 'block'; 
+        document.getElementById('overlay').style.display = 'block'; 
+        document.body.style.overflow = "hidden"; 
+    }
+    function closeSellModal() { 
+        document.getElementById('sellModal').style.display = 'none'; 
+        document.getElementById('overlay').style.display = 'none'; 
+        document.body.style.overflow = "auto"; 
+    }
+    window.toggleHistory = () => {
+    const s = document.getElementById('historySection');
+    if (s.style.display === 'none' || s.style.display === '') {
+        s.style.display = 'block';
+        document.getElementById('historyTitle').innerText = "আপনার বিক্রয় তালিকা";
+        // এখানে সরাসরি window.allSales পাস করো
+        renderHistory(window.allSales || []);
+    } else {
+        s.style.display = 'none';
+    }
+};
+    function selectFbType(el, mode) {
+        document.querySelectorAll('.type-option').forEach(opt => opt.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('box_2fa').style.display = (mode === '2fa') ? 'block' : 'none';
+        document.getElementById('box_cookies').style.display = (mode === 'cookies') ? 'block' : 'none';
+    }
+</script>
+
+<footer style="padding: 30px; text-align: center; color: blue; font-size: 14px;">
+    &copy; 2026 NS Income <br> Developed by Rakibul Hasan SîFåT
+</footer>
+<iframe src="support.html" style="position:fixed; bottom:30px; right:20px; width:70px; height:280px; border:none; z-index:9999;" scrolling="no"></iframe>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History - NS Income</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #1877f2; --bg: #f3f4f6; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; overflow-x: hidden; }
+        .header { background: white; padding: 15px 20px; display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 1100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .site-name { font-size: 22px; font-weight: 900; color: #3b82f6 ; position: absolute; left: 50%; transform: translateX(-50%); letter-spacing: 1px; text-transform: uppercase; text-shadow: 2px 2px 0px #e5e7eb, 4px 4px 0px #d1d5db; display: flex; align-items: center; gap: 8px; }
+        .site-name i { color: #3b82f6 ; text-shadow: none; }
+        .notice-bar { background: #fee2e2; color: #ef4444; padding: 10px; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; border-bottom: 1px solid #fecaca; }
+        .notice-text { display: inline-block; animation: scroll-left 15s linear infinite; }
+        @keyframes scroll-left { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        
+        /* Sticky Tabs Fix */
+        .tab-container-sticky { position: sticky; top: 55px; z-index: 1000; background: var(--bg); }
+        .tab-wrapper { display: flex; background: white; padding: 10px; overflow-x: auto; gap: 10px; border-bottom: 1px solid #e5e7eb; scrollbar-width: none; }
+        .tab-wrapper::-webkit-scrollbar { display: none; }
+        .tab-btn { padding: 10px 20px; border-radius: 20px; border: none; background: #f3f4f6; color: #4b5563; font-weight: 700; white-space: nowrap; cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(24, 119, 242, 0.3); }
+        
+        .container { padding: 15px; max-width: 500px; margin: 0 auto; }
+        .balance-card { background: linear-gradient(135deg, #4e54c8, #8f94fb); color: white; padding: 20px; border-radius: 20px; text-align: center; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .transaction-item { background: white; padding: 15px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+        .tx-info h4 { margin: 0; font-size: 15px; color: #1f2937; }
+        .tx-info p { margin: 5px 0 0; font-size: 11px; color: #9ca3af; }
+        .status-box { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; display: inline-block; margin-top: 5px; }
+        .status-success { color: #10b981; background: #ecfdf5; }
+        .status-pending { color: #f59e0b; background: #fffbeb; }
+        .empty-state { text-align: center; padding: 50px 20px; color: #9ca3af; }
+        /* Modal PopUp & Scroll Fix */
+@keyframes popUp {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* যখন মডাল ওপেন হবে তখন বডি স্ক্রল হবে না */
+.no-scroll {
+    overflow: hidden;
+    height: 100vh;
+}
+
+.close-btn {
+    margin-top: 15px;
+    background: papayawhip;
+    border: none;
+    color: #4b5563;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 8px 20px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.close-btn:hover {
+    background: #e5e7eb;
+    color: #ef4444;
+}
+
+        #supportModal {
+        transition: all 0.3s ease;
+}
+        
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <i class="fa-solid fa-arrow-left" onclick="window.location.href='dashboard.html'" style="cursor:pointer;"></i>
+    <div class="site-name"><i class="fa-solid fa-shield-halved"></i> NS INCOME</div>
+</div>
+
+<div class="notice-bar">
+    <div class="notice-text">📢 আপনার সকল লেনদেনের হিসাব এখানে দেখতে পাবেন। কোনো সমস্যা হলে সাপোর্টে যোগাযোগ করুন।</div>
+</div>
+
+<div class="container">
+    <div class="balance-card">
+        <p style="margin:0; font-size: 13px; opacity: 0.9;">Available Balance</p>
+        <h1 style="margin: 5px 0 0; font-size: 32px;"> ৳<span id="user-balance">Loading...</span></h1>
+    </div>
+    
+    <div style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 15px; margin-bottom: 20px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <h4 style="margin: 0 0 8px 0; color: #b45309; font-size: 15px;"><i class="fas fa-bullhorn"></i> Important Notice / গুরুত্বপূর্ণ নোটিশ:</h4>
+        <ul style="margin: 0; padding-left: 18px; font-size: 12px; color: #78350f; line-height: 1.8;">
+            <li><b>EN:</b> Withdrawal requests are processed within 12-24 hours. <br> 
+                <b>BN:</b> উইথড্র রিকোয়েস্ট ১২-২৪ ঘণ্টার মধ্যে সম্পন্ন করা হয়।</li>
+            <li style="margin-top: 5px;"><b>EN:</b> Only "Approved" sales are added to your balance. <br> 
+                <b>BN:</b> শুধুমাত্র "Approved" হওয়া কাজের ব্যালেন্স এখানে যোগ হয়।</li>
+            <li style="margin-top: 5px;"><b>EN:</b> Referral bonus is added after your referral completes a task. <br> 
+                <b>BN:</b> রেফার করা ব্যক্তি কাজ সম্পন্ন করলে বোনাস যোগ হবে।</li>
+        </ul>
+    </div>
+</div>
+
+<div class="tab-container-sticky">
+    <div class="tab-wrapper">
+        <button class="tab-btn active" onclick="switchTab('all', this)">All</button>
+        <button class="tab-btn" onclick="switchTab('facebook', this)">FB Sell</button>
+        <button class="tab-btn" onclick="switchTab('gmail', this)">Gmail Sell</button>
+        <button class="tab-btn" onclick="switchTab('withdraw', this)">Withdrawal</button>
+    </div>
+    <div class="tab-wrapper" style="background: #f9fafb; border-top: 1px solid #eee;">
+        <span style="font-size: 12px; color: #6b7280; align-self: center; margin-right: 5px; padding-left: 10px;">Filter:</span>
+        <button class="tab-btn active" onclick="filterByDate('all', this)" style="padding: 5px 12px; font-size: 12px;">All Time</button>
+        <button class="tab-btn" onclick="filterByDate(1, this)" style="padding: 5px 12px; font-size: 12px;">24h</button>
+        <button class="tab-btn" onclick="filterByDate(7, this)" style="padding: 5px 12px; font-size: 12px;">7 Days</button>
+        <button class="tab-btn" onclick="filterByDate(30, this)" style="padding: 5px 12px; font-size: 12px;">30 Days</button>
+    </div>
+</div>
+
+<div class="container">
+    <div id="transaction-list">
+        <div class="empty-state">Loading...</div>
+    </div>
+
+    <div style="text-align: center; margin-top: 25px; padding: 20px; background:#fffbeb ; border-radius: 15px; border: 1px dashed #d1d5db; margin-left: 15px; margin-right: 15px;">
+    <p style="font-size: 13px; color: #4b5563; margin-bottom: 10px; line-height: 1.5;">
+        <b>EN:</b> If you find any mistakes in your history, please contact support. <br>
+        <b>BN:</b> লেনদেনে কোনো ভুল থাকলে দয়া করে সাপোর্টে যোগাযোগ করুন।
+    </p>
+    <div onclick="openSupportModal()" style="display: inline-block; color: white; background: #1877f2; padding: 10px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 13px; box-shadow: 0 4px 10px rgba(24, 119, 242, 0.2);">
+        Contact Support / যোগাযোগ করুন <i class="fas fa-headset" style="margin-left: 5px;"></i>
+    </div>
+</div>
+
+<div id="supportModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter: blur(2px);">
+    <div style="background:white; width:85%; max-width:320px; border-radius:20px; padding:25px; text-align:center; position:relative; animation: popUp 0.3s ease-out; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <h3 style="margin:0 0 20px 0; font-size:18px; color:#1f2937;">Contact Support/যোগাযোগ করুন</h3>
+        
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <a href="https://t.me/ns_income_admin" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#0088cc; color:white; padding:12px; border-radius:12px; text-decoration:none; font-weight:bold;">
+                <i class="fab fa-telegram-plane"></i> Telegram
+            </a>
+            <a href="https://wa.me/8801912766091" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#25D366; color:white; padding:12px; border-radius:12px; text-decoration:none; font-weight:bold;">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+            </a>
+            <div onclick="sendEmail()" style="display:flex; align-items:center; justify-content:center; gap:10px; background:#EA4335; color:white; padding:12px; border-radius:12px; cursor:pointer; font-weight:bold;">
+                <i class="fas fa-envelope"></i> Gmail
+            </div>
+        </div>
+
+        <button class="close-btn" onclick="closeSupportModal()">Close / বন্ধ করুন</button>
+    </div>
+</div>
+</div>
+
+<footer style="padding: 30px; text-align: center; color: blue; font-size: 14px;">
+    &copy; 2026 NS Income <br> Developed by Rakibul Hasan SîFåT
+</footer>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, collection, query, where, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAvhcU9ODN-v0BJj4_vYCbjrTi6jpMM8Hk",
+        authDomain: "ns-income-2599.firebaseapp.com",
+        projectId: "ns-income-2599",
+        storageBucket: "ns-income-2599.firebasestorage.app",
+        messagingSenderId: "508656544790",
+        appId: "1:508656544790:web:01536ff89ec4be00749937"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    
+    let masterData = []; 
+    let currentCat = 'all';
+    let currentTime = 'all';
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            setupLiveSystem(user.uid);
+        } else {
+            window.location.href = 'index.html';
+        }
+    });
+
+    async function setupLiveSystem(uid) {
+        const bonus = 5.00;
+        const balEl = document.getElementById('user-balance');
+        
+        // ১. ইউজারের ডাটা থেকে তার ৬-ডিজিটের আইডি (userId) সংগ্রহ করা
+        const userDoc = await getDoc(doc(db, "users", uid));
+        const chotoID = userDoc.exists() ? userDoc.data().userId : "";
+
+        // ২. আর্নিং কুয়েরি (বড় আইডি দিয়ে)
+        const qG = query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+        const qF = query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+        const qR = query(collection(db, "referrals"), where("refBy", "==", uid), where("status", "==", "Approved"));
+        
+        // ৩. উইথড্র কুয়েরি (ছোট আইডি দিয়ে এবং রিকোয়েস্ট দিলেই যাতে হিস্ট্রিতে আসে)
+        const qW = query(collection(db, "withdrawals"), where("userId", "==", chotoID));
+
+        const syncEverything = async () => {
+            const [gs, fs, rs, ws] = await Promise.all([getDocs(qG), getDocs(qF), getDocs(qR), getDocs(qW)]);
+            let g = 0, f = 0, r = 0, totalW = 0;
+            masterData = [];
+
+            // জিমেইল সেলস
+            gs.forEach(d => { let p = Number(d.data().price || 0); g += p; masterData.push({ type: 'gmail', amount: p, status: 'Approved', timestamp: d.data().timestamp, method: 'Gmail Selling' }); });
+            
+            // ফেসবুক সেলস
+            fs.forEach(d => { let p = Number(d.data().price || 0); f += p; masterData.push({ type: 'facebook', amount: p, status: 'Approved', timestamp: d.data().timestamp, method: 'FB Selling' }); });
+            
+            // রেফার বোনাস
+            rs.forEach(d => { let p = Number(d.data().amount || 0); r += p; masterData.push({ type: 'refer', amount: p, status: 'Approved', timestamp: d.data().timestamp, method: 'Refer Bonus' }); });
+            
+            // উইথড্রয়াল লজিক (উইথড্র ফাইলে যেভাবে দিয়েছিলাম)
+            ws.forEach(d => {
+                let p = Number(d.data().amount || 0);
+                let currentStatus = d.data().status || 'Pending';
+                
+                // উইথড্র রিকোয়েস্ট দিলেই ব্যালেন্স থেকে মাইনাস হবে (Pending + Success সব)
+                totalW += p;
+                
+                masterData.push({
+                    type: 'withdraw',
+                    amount: p,
+                    status: currentStatus,
+                    timestamp: d.data().timestamp,
+                    method: (d.data().method || 'Withdraw') + ' Withdrawal',
+                    number: d.data().number || 'N/A'
+                });
+            });
+
+            // ৪. ফাইনাল ব্যালেন্স আপডেট
+            if(balEl) balEl.innerText = (bonus + g + f + r - totalW).toFixed(2);
+            
+            masterData.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+            applyFilters();
+        };
+
+        // রিয়েল টাইম অটোমেশন
+        onSnapshot(qW, syncEverything);
+        onSnapshot(qG, syncEverything);
+        onSnapshot(qF, syncEverything);
+        onSnapshot(qR, syncEverything);
+        syncEverything();
+    }
+
+    window.switchTab = (type, btn) => {
+        const parent = btn.parentElement;
+        if(parent) {
+            parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        currentCat = type;
+        applyFilters(); 
+    }
+
+    window.filterByDate = (days, btn) => {
+        const parent = btn.parentElement;
+        if(parent) {
+            parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        currentTime = days;
+        applyFilters();
+    }
+
+    function applyFilters() {
+        let filtered = masterData;
+        if (currentCat !== 'all') {
+            if(currentCat === 'withdraw') {
+                filtered = filtered.filter(t => t.type === 'withdraw');
+            } else {
+                filtered = filtered.filter(t => t.type !== 'withdraw' && t.type === currentCat);
+            }
+        }
+        
+        if (currentTime !== 'all') {
+            const now = Math.floor(Date.now() / 1000);
+            const limit = now - (currentTime * 24 * 60 * 60);
+            filtered = filtered.filter(t => (t.timestamp?.seconds || 0) >= limit);
+        }
+        renderHTML(filtered);
+    }
+
+    function renderHTML(data) {
+        const container = document.getElementById('transaction-list');
+        if (!container) return;
+        
+        if (data.length === 0) {
+            container.innerHTML = '<div class="empty-state">কোনো রেকর্ড পাওয়া যায়নি।</div>';
+            return;
+        }
+        
+        let html = "";
+        data.forEach(t => {
+            const isW = t.type === 'withdraw';
+            const statusClass = (t.status === 'Success' || t.status === 'Approved') ? 'status-success' : 'status-pending';
+            const date = t.timestamp ? new Date(t.timestamp.seconds * 1000).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Pending';
+            
+            html += `<div class="transaction-item" style="border-left: 4px solid ${isW ? '#ef4444' : '#10b981'};">
+                <div class="tx-info">
+                    <h4>${t.method}</h4>
+                    <p>${date}</p>
+                    ${isW && t.number ? `<p style="color:#1877f2; font-weight:bold; font-size:12px;">${t.number}</p>` : ''}
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-weight:800; color:${isW ? '#ef4444' : '#10b981'}; font-size:15px;">
+                        ${isW ? '-' : '+'} ৳${Number(t.amount).toFixed(2)}
+                    </div>
+                    <span class="status-box ${statusClass}">${t.status}</span>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    window.openSupportModal = function() {
+        document.getElementById('supportModal').style.display = 'flex';
+        document.body.classList.add('no-scroll');
+    };
+
+    window.closeSupportModal = function() {
+        document.getElementById('supportModal').style.display = 'none';
+        document.body.classList.remove('no-scroll');
+    };
+
+    window.sendEmail = function() {
+        window.open(`mailto:nsicomesupport@gmail.com?subject=Support Request`, '_blank');
+    };
+</script>
+<iframe src="support.html" style="position:fixed; bottom:30px; right:20px; width:70px; height:280px; border:none; z-index:9999;" scrolling="no"></iframe>
+</body>
+</html>

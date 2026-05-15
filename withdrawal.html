@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw Funds - NS Income</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root { --primary: #1877f2; --bg: #f3f4f6; --bkash: #e2136e; --nagad: #f7941d; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding-bottom: 40px; }
+    
+        .header { background: white; padding: 15px 20px; display: flex; align-items: center; gap: 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header i { font-size: 20px; cursor: pointer; }
+        
+        .site-name { font-size: 22px; font-weight: 900; color: #187; position: absolute; left: 50%; transform: translateX(-50%); letter-spacing: 1px; text-transform: uppercase; text-shadow: 2px 2px 0px #e5e7eb, 4px 4px 0px #d1d5db; display: flex; align-items: center; gap: 8px; }
+        .notice-bar { background: #fee2e2; color: #187; padding: 10px; font-size: 13px; font-weight: 600; overflow: hidden; white-space: nowrap; border-bottom: 1px solid #fecaca; }
+        .notice-text { display: inline-block; animation: scroll-left 15s linear infinite; }
+        @keyframes scroll-left { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        
+        .container { max-width: 450px; margin: 0 auto; padding: 15px; }
+        .page-heading { text-align: center; margin: 20px 0; color: #065f46; line-height: 1.2; }
+        .page-heading h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 1px; }
+
+        .wallet-card { background: linear-gradient(135deg, #1877f2, #0f172a); border-radius: 25px; padding: 30px 20px; color: white; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); position: relative; }
+        .main-balance { font-size: 36px; font-weight: 800; margin: 10px 0; }
+        .withdraw-info { font-size: 12px; background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 20px; }
+
+        .withdraw-form-card { background: white; border-radius: 25px; padding: 25px; margin-top: 20px; box-shadow: 0 2px 15px rgba(0,0,0,0.02); }
+        .field-group { margin-bottom: 18px; }
+        .field-label { display: block; font-size: 11px; font-weight: 800; color: #9ca3af; text-transform: uppercase; margin-bottom: 8px; }
+        
+        .input-box { width: 100%; padding: 15px; border-radius: 12px; border: 1.5px solid #f1f5f9; background: #f8fafc; font-size: 14px; box-sizing: border-box; font-weight: 600; transition: 0.3s; }
+
+        .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .method-item { border: 2px solid #f1f5f9; border-radius: 15px; padding: 15px; text-align: center; cursor: pointer; transition: 0.3s; background: #f8fafc; }
+        .method-item.active-bkash { border-color: var(--bkash); background: #fff1f7; }
+        .method-item.active-nagad { border-color: var(--nagad); background: #fff7ed; }
+        
+        .withdraw-btn { width: 100%; padding: 18px; border-radius: 15px; border: none; background: #000; color: white; font-size: 16px; font-weight: 700; cursor: pointer; }
+
+        .status-pending { color: #f59e0b; font-weight: 700; font-size: 12px; }
+        .status-success { color: #10b981; font-weight: 700; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <i class="fa-solid fa-arrow-left" onclick="window.location.href='dashboard.html'"></i>
+    <div class="site-name"><i class="fa-solid fa-shield-halved"></i> NS INCOME</div>
+</div>
+
+<div class="notice-bar">
+    <div class="notice-text">📢 NS Income-এ স্বাগতম! টাকা উত্তোলন করতে সঠিক বিকাশ/নগদ নম্বর প্রদান করুন।</div>
+</div>
+
+<div class="container">
+    <div class="page-heading">
+        <h1>WITHDRAWAL</h1>
+        <h1>SYSTEM</h1>
+    </div>
+  
+    <div class="wallet-card">
+        <span style="opacity: 0.8; font-size: 14px;">Available Balance</span>
+        <div class="main-balance" id="display-balance">Loading...</div>
+        <div class="withdraw-info">Minimum Withdraw: ৳50</div><br>
+        <div style="font-size: 14px; color: #10b981; font-weight: 700;">Withdrawal processing time: 1-12 hours</div>
+    </div>
+
+    <div class="withdraw-form-card">
+        <label class="field-label">Select Payment Method</label>
+        <div class="method-grid">
+            <div class="method-item" id="btn-bkash" onclick="selectMethod('Bkash')">
+                <svg width="40" height="40" viewBox="0 0 100 100"><rect width="100" height="100" rx="15" fill="#E2136E"/><text x="50%" y="55%" text-anchor="middle" fill="white" font-weight="bold" font-size="20">bKash</text></svg>
+                <span style="display:block; margin-top:5px; font-weight:700;">Bkash</span>
+            </div>
+            <div class="method-item" id="btn-nagad" onclick="selectMethod('Nagad')">
+                <svg width="40" height="40" viewBox="0 0 100 100"><rect width="100" height="100" rx="15" fill="#F7941D"/><text x="50%" y="55%" text-anchor="middle" fill="white" font-weight="bold" font-size="20">Nagad</text></svg>
+                <span style="display:block; margin-top:5px; font-weight:700;">Nagad</span>
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label class="field-label">Withdrawal Amount</label>
+            <input type="number" id="withdraw-amount" class="input-box" placeholder="Amount (min 50)">
+        </div>
+
+        <div class="field-group">
+            <label class="field-label" id="number-label">Receiver Number</label>
+            <input type="tel" id="receiver-number" class="input-box" placeholder="01XXXXXXXXX">
+        </div>
+
+        <button class="withdraw-btn" id="submit-btn" onclick="processWithdraw()">Confirm Withdrawal</button>
+        <p id="error-msg" style="color:red; font-size:12px; text-align:center; margin-top:10px;"></p>
+    </div>
+    <div style="padding: 15px; text-align: center; color: #dc2626; font-size: 13px; background: #fee2e2; border-radius: 12px; margin: 20px 0; border: 1px dashed #f87171;">
+    <i class="fas fa-exclamation-triangle"></i>
+    <strong>Notice:</strong> The authority will not be responsible for providing an incorrect number. Payments are completed within 1-12 hours.<br> <br>
+    <i class="fas fa-exclamation-triangle"></i>
+    <strong>নোটিশ:</strong> ভুল নম্বর প্রদান করলে কর্তৃপক্ষ দায়ী থাকবে না। পেমেন্ট ১-১২ ঘণ্টার মধ্যে সম্পন্ন করা হয়। <br>
+</div>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, onSnapshot, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAvhcU9ODN-v0BJj4_vYCbjrTi6jpMM8Hk",
+        authDomain: "ns-income-2599.firebaseapp.com",
+        projectId: "ns-income-2599",
+        storageBucket: "ns-income-2599.firebasestorage.app",
+        messagingSenderId: "508656544790",
+        appId: "1:508656544790:web:01536ff89ec4be00749937"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let currentUser = null;
+    let liveBalance = 0; 
+    let selectedMethod = "";
+
+    // ফিক্স করা মেথড সিলেকশন লজিক
+    window.selectMethod = (method) => {
+        selectedMethod = method;
+        const numInput = document.getElementById('receiver-number');
+        const numLabel = document.getElementById('number-label');
+        const bBtn = document.getElementById('btn-bkash');
+        const nBtn = document.getElementById('btn-nagad');
+
+        // রিসেট ক্লাস
+        bBtn.classList.remove('active-bkash');
+        nBtn.classList.remove('active-nagad');
+
+        if(method === 'Bkash') {
+            bBtn.classList.add('active-bkash');
+            numInput.style.borderColor = "#e2136e";
+            numLabel.innerText = "ENTER YOUR BKASH PERSONAL NUMBER";
+        } else {
+            nBtn.classList.add('active-nagad');
+            numInput.style.borderColor = "#f7941d";
+            numLabel.innerText = "ENTER YOUR NAGAD PERSONAL NUMBER";
+        }
+    };
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            setupBalanceAutomation(user.uid); 
+        } else { 
+            window.location.href = 'index.html'; 
+        }
+    });
+
+    async function setupBalanceAutomation(uid) {
+        const startBonus = 5.00;
+        const balDisplay = document.getElementById('display-balance');
+
+        const syncData = async () => {
+            try {
+                const userDoc = await getDocs(query(collection(db, "users"), where("__name__", "==", uid)));
+                let chotoID = "";
+                userDoc.forEach(d => chotoID = d.data().userId);
+
+                const qG = query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+                const qF = query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+                const qR = query(collection(db, "referrals"), where("refBy", "==", uid), where("status", "==", "Approved"));
+                const qW = query(collection(db, "withdrawals"), where("userId", "==", chotoID));
+
+                const [gs, fs, rs, ws] = await Promise.all([getDocs(qG), getDocs(qF), getDocs(qR), getDocs(qW)]);
+                
+                let income = 0;
+                gs.forEach(d => income += Number(d.data().price || 0));
+                fs.forEach(d => income += Number(d.data().price || 0));
+                rs.forEach(d => income += Number(d.data().amount || 0));
+                
+                let withdrawn = 0;
+                ws.forEach(d => withdrawn += Number(d.data().amount || 0));
+
+                liveBalance = (startBonus + income) - withdrawn;
+                if (balDisplay) balDisplay.innerText = "৳" + liveBalance.toFixed(2);
+            } catch (e) { console.error("Sync Error:", e); }
+        };
+
+        onSnapshot(collection(db, "withdrawals"), syncData);
+        onSnapshot(collection(db, "gmail_sales"), syncData);
+        onSnapshot(collection(db, "fb_sales"), syncData);
+        onSnapshot(collection(db, "referrals"), syncData);
+        syncData();
+    }
+
+    window.processWithdraw = async () => {
+        const amountField = document.getElementById('withdraw-amount');
+        const numberField = document.getElementById('receiver-number');
+        const amount = parseFloat(amountField.value);
+        const number = numberField.value;
+        const btn = document.getElementById('submit-btn');
+        
+        // ভ্যালিডেশন যা withdrawal(6) এ ছিল
+        if (!selectedMethod) {
+            alert("দয়া করে বিকাশ বা নগদ সিলেক্ট করুন।");
+            return;
+        }
+        if (isNaN(amount) || amount < 50) {
+            alert("সর্বনিম্ন ৫০ টাকা উইথড্র দিন।");
+            return;
+        }
+        if (amount > liveBalance) {
+            alert(`আপনার ব্যালেন্স কম। বর্তমান ব্যালেন্স: ৳${liveBalance.toFixed(2)}`);
+            return;
+        }
+        if (number.length < 11) {
+            alert("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন।");
+            return;
+        }
+        
+        btn.disabled = true;
+        btn.innerText = "Processing...";
+        
+        try {
+            const userSnap = await getDocs(query(collection(db, "users"), where("__name__", "==", currentUser.uid)));
+            let displayUserId = "";
+            let uName = "";
+            userSnap.forEach(doc => {
+                displayUserId = doc.data().userId;
+                uName = doc.data().name;
+            });
+            
+            await addDoc(collection(db, "withdrawals"), {
+                uid: currentUser.uid,
+                userId: displayUserId,
+                userName: uName,
+                amount: amount,
+                method: selectedMethod,
+                number: number,
+                status: "Pending",
+                timestamp: serverTimestamp()
+            });
+            
+            const botToken = '8634823978:AAFMj7oU80Ond8z098Ntqi1spe9MEcQdF9E';
+            const chatId = '8448874057';
+            const tgMsg = `💰 **New Withdraw Request!**\n\n👤 Name: ${uName}\n📧 Email: ${currentUser.email}\n🆔 User ID: \`${displayUserId}\`\n\n🏦 Method: **${selectedMethod}**\n📱 Number: \`${number}\`\n💵 Amount: \`${amount}\` ৳\n\n🕒 Time: ${new Date().toLocaleString()}`;
+            
+            await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: chatId, text: tgMsg, parse_mode: 'Markdown' })
+            });
+            
+            alert("উইথড্র রিকোয়েস্ট সফল হয়েছে!");
+            amountField.value = "";
+            numberField.value = "";
+            location.reload();
+            
+        } catch (e) {
+            alert("Error: " + e.message);
+            btn.disabled = false;
+            btn.innerText = "Confirm Withdrawal";
+        }
+    };
+</script>
+
+<footer style="padding: 20px; text-align: center; color: #1877f2; font-size: 12px; font-weight: 700;">
+    &copy; 2026 NS Income <br> Developed by Rakibul Hasan SîFåT
+</footer>
+</body>
+</html>
