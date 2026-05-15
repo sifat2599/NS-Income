@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Settings - NS Income</title>
+    <meta name="description" content="NS Income - বাংলাদেশের সেরা ডিজিটাল মার্কেটপ্লেস। জিমেইল ও ফেসবুক অ্যাকাউন্ট সেল করে দ্রুত বিকাশ বা নগদে পেমেন্ট বুঝে নিন।">
+<meta name="keywords" content="NS Income, ns income, ns income netlify, gmail sell bangladesh, facebook account sell bd, earn money online bd">
+<meta name="author" content="Rakibul Hasan SîFåT">
+
+<meta property="og:title" content="NS Income - Premium Digital Marketplace">
+<meta property="og:description" content="নিরাপদে আপনার ডিজিটাল অ্যাকাউন্ট সেল করুন এবং দ্রুত পেমেন্ট বুঝে নিন।">
+<meta property="og:image" content="https://ns-income.netlify.app/logo.png">
+<meta property="og:url" content="https://ns-income.netlify.app">
+<meta property="og:type" content="website">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -270,15 +279,14 @@
             const data = docSnap.data();
             const chotoID = data.userId || "";
             
-            // ১. প্রোফাইল ডিটেইলস সেট করা (Joining Date & Email Fix)
+            // ১. প্রোফাইল ডিটেইলস সেট করা
             if (document.getElementById('id-display')) document.getElementById('id-display').innerText = chotoID;
             if (document.getElementById('join-date-display')) document.getElementById('join-date-display').innerText = toEnglishDate(data.joinDate);
             if (document.getElementById('name-display')) document.getElementById('name-display').innerText = data.name || "User";
-            if (document.getElementById('email-display')) document.getElementById('email-display').innerText = currentUser.email; // Auth theke email nichhe
+            if (document.getElementById('email-display')) document.getElementById('email-display').innerText = auth.currentUser.email;
             
-            // ইনপুট বক্স আপডেট
             if (document.getElementById('input-name')) document.getElementById('input-name').value = data.name || "";
-            if (document.getElementById('input-email')) document.getElementById('input-email').value = currentUser.email;
+            if (document.getElementById('input-email')) document.getElementById('input-email').value = auth.currentUser.email;
             if (document.getElementById('input-phone')) document.getElementById('input-phone').value = data.phone || "";
             
             const img = document.getElementById('user-img');
@@ -289,14 +297,19 @@
                 if (defaultAvatar) defaultAvatar.style.display = 'none';
             }
             
-            // ২. ব্যালেন্স ও উইথড্র কুয়েরি
+            // ২. ব্যালেন্স ও ইনকাম কুয়েরি
             const qGmail = query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
             const qFB = query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
-            const qRefer = query(collection(db, "referrals"), where("refBy", "==", uid), where("hasSoldFirstAccount", "==", "true));
             
-            // উইথড্র কুয়েরি (userId এবং uid দুইটাই চেক করবে)
+            // রেফারেল কুয়েরি: সরাসরি users কালেকশন থেকে (তোর ড্যাশবোর্ডের লজিক অনুযায়ী)
+            const qRefer = query(
+                collection(db, "users"), 
+                where("referredBy", "==", chotoID), 
+                where("hasSoldFirstAccount", "==", true)
+            );
+            
             const qW1 = query(collection(db, "withdrawals"), where("userId", "==", chotoID));
-            const qW2 = query(collection(db, "uid", "==", uid));
+            const qW2 = query(collection(db, "withdrawals"), where("userId", "==", uid));
             
             const updateUI = async () => {
                 try {
@@ -307,29 +320,30 @@
                     let income = 0;
                     gS.forEach(d => income += Number(d.data().price || 0));
                     fS.forEach(d => income += Number(d.data().price || 0));
-                    rS.forEach(d => income += Number(d.data().amount || 0));
+                    
+                    // রেফার ইনকাম ক্যালকুলেশন (প্রতি সাকসেসফুল রেফার ৫ টাকা)
+                    let referIncome = rS.size * 5; 
                     
                     let totalWithdrawMinus = 0;
                     let successWithdrawBox = 0;
                     let seenDocs = new Set();
                     
-                    // ডুপ্লিকেট চেক করে উইথড্র ক্যালকুলেশন
                     const allWithdrawDocs = [...wS1.docs, ...wS2.docs];
                     allWithdrawDocs.forEach(d => {
                         if (!seenDocs.has(d.id)) {
                             seenDocs.add(d.id);
                             const amt = Number(d.data().amount || 0);
-                            totalWithdrawMinus += amt; // সব উইথড্র ব্যালেন্স থেকে কাটবে
+                            totalWithdrawMinus += amt; 
                             if (d.data().status === "Success") {
-                                successWithdrawBox += amt; // শুধু সাকসেসগুলো বক্সে দেখাবে
+                                successWithdrawBox += amt;
                             }
                         }
                     });
                     
                     let bonus = 5.00;
-                    const finalBal = (bonus + income) - totalWithdrawMinus;
+                    // মেইন ব্যালেন্স ক্যালকুলেশন: (বোনাস + সেল ইনকাম + রেফার ইনকাম) - মোট উইথড্র
+                    const finalBal = (bonus + income + referIncome) - totalWithdrawMinus;
                     
-                    // স্ক্রিনে ব্যালেন্স ও উইথড্র সেট করা
                     const balEl = document.getElementById('main-balance');
                     if (balEl) balEl.innerText = "৳" + finalBal.toFixed(2);
                     
@@ -341,7 +355,6 @@
                 }
             };
             
-            // রিয়েল টাইম আপডেটের জন্য লিসেনার
             onSnapshot(qGmail, updateUI);
             onSnapshot(qFB, updateUI);
             onSnapshot(qRefer, updateUI);
