@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Withdraw Funds - NS Income</title>
+    <meta name="description" content="NS Income - বাংলাদেশের সেরা ডিজিটাল মার্কেটপ্লেস। জিমেইল ও ফেসবুক অ্যাকাউন্ট সেল করে দ্রুত বিকাশ বা নগদে পেমেন্ট বুঝে নিন।">
+<meta name="keywords" content="NS Income, ns income, ns income netlify, gmail sell bangladesh, facebook account sell bd, earn money online bd">
+<meta name="author" content="Rakibul Hasan SîFåT">
+
+<meta property="og:title" content="NS Income - Premium Digital Marketplace">
+<meta property="og:description" content="নিরাপদে আপনার ডিজিটাল অ্যাকাউন্ট সেল করুন এবং দ্রুত পেমেন্ট বুঝে নিন।">
+<meta property="og:image" content="https://ns-income.netlify.app/logo.png">
+<meta property="og:url" content="https://ns-income.netlify.app">
+<meta property="og:type" content="website">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -104,95 +113,107 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// এখানে getDoc (S ছাড়া) যোগ করা হয়েছে
+import { getFirestore, doc, getDoc, onSnapshot, collection, query, where, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyAvhcU9ODN-v0BJj4_vYCbjrTi6jpMM8Hk",
-        authDomain: "ns-income-2599.firebaseapp.com",
-        projectId: "ns-income-2599",
-        storageBucket: "ns-income-2599.firebasestorage.app",
-        messagingSenderId: "508656544790",
-        appId: "1:508656544790:web:01536ff89ec4be00749937"
-    };
+const firebaseConfig = {
+    apiKey: "AIzaSyAvhcU9ODN-v0BJj4_vYCbjrTi6jpMM8Hk",
+    authDomain: "ns-income-2599.firebaseapp.com",
+    projectId: "ns-income-2599",
+    storageBucket: "ns-income-2599.firebasestorage.app",
+    messagingSenderId: "508656544790",
+    appId: "1:508656544790:web:01536ff89ec4be00749937"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-    let currentUser = null;
-    let liveBalance = 0; 
-    let selectedMethod = "";
+let currentUser = null;
+let liveBalance = 0;
+let selectedMethod = "";
 
-    // ফিক্স করা মেথড সিলেকশন লজিক
-    window.selectMethod = (method) => {
-        selectedMethod = method;
-        const numInput = document.getElementById('receiver-number');
-        const numLabel = document.getElementById('number-label');
-        const bBtn = document.getElementById('btn-bkash');
-        const nBtn = document.getElementById('btn-nagad');
-
-        // রিসেট ক্লাস
-        bBtn.classList.remove('active-bkash');
-        nBtn.classList.remove('active-nagad');
-
-        if(method === 'Bkash') {
-            bBtn.classList.add('active-bkash');
-            numInput.style.borderColor = "#e2136e";
-            numLabel.innerText = "ENTER YOUR BKASH PERSONAL NUMBER";
-        } else {
-            nBtn.classList.add('active-nagad');
-            numInput.style.borderColor = "#f7941d";
-            numLabel.innerText = "ENTER YOUR NAGAD PERSONAL NUMBER";
-        }
-    };
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUser = user;
-            setupBalanceAutomation(user.uid); 
-        } else { 
-            window.location.href = 'index.html'; 
-        }
-    });
-
-    async function setupBalanceAutomation(uid) {
-        const startBonus = 5.00;
-        const balDisplay = document.getElementById('display-balance');
-
-        const syncData = async () => {
-            try {
-                const userDoc = await getDocs(query(collection(db, "users"), where("__name__", "==", uid)));
-                let chotoID = "";
-                userDoc.forEach(d => chotoID = d.data().userId);
-
-                const qG = query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
-                const qF = query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
-                const qR = query(collection(db, "referrals"), where("refBy", "==", uid), where("status", "==", "Approved"));
-                const qW = query(collection(db, "withdrawals"), where("userId", "==", chotoID));
-
-                const [gs, fs, rs, ws] = await Promise.all([getDocs(qG), getDocs(qF), getDocs(qR), getDocs(qW)]);
-                
-                let income = 0;
-                gs.forEach(d => income += Number(d.data().price || 0));
-                fs.forEach(d => income += Number(d.data().price || 0));
-                rs.forEach(d => income += Number(d.data().amount || 0));
-                
-                let withdrawn = 0;
-                ws.forEach(d => withdrawn += Number(d.data().amount || 0));
-
-                liveBalance = (startBonus + income) - withdrawn;
-                if (balDisplay) balDisplay.innerText = "৳" + liveBalance.toFixed(2);
-            } catch (e) { console.error("Sync Error:", e); }
-        };
-
-        onSnapshot(collection(db, "withdrawals"), syncData);
-        onSnapshot(collection(db, "gmail_sales"), syncData);
-        onSnapshot(collection(db, "fb_sales"), syncData);
-        onSnapshot(collection(db, "referrals"), syncData);
-        syncData();
+window.selectMethod = (method) => {
+    selectedMethod = method;
+    const numInput = document.getElementById('receiver-number');
+    const numLabel = document.getElementById('number-label');
+    const bBtn = document.getElementById('btn-bkash');
+    const nBtn = document.getElementById('btn-nagad');
+    
+    bBtn.classList.remove('active-bkash');
+    nBtn.classList.remove('active-nagad');
+    
+    if (method === 'Bkash') {
+        bBtn.classList.add('active-bkash');
+        numInput.style.borderColor = "#e2136e";
+        numLabel.innerText = "ENTER YOUR BKASH PERSONAL NUMBER";
+    } else {
+        nBtn.classList.add('active-nagad');
+        numInput.style.borderColor = "#f7941d";
+        numLabel.innerText = "ENTER YOUR NAGAD PERSONAL NUMBER";
     }
+};
 
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUser = user;
+        setupBalanceAutomation(user.uid);
+    } else {
+        window.location.href = 'index.html';
+    }
+});
+
+async function setupBalanceAutomation(uid) {
+    const startBonus = 5.00;
+    const balDisplay = document.getElementById('display-balance');
+    
+    const syncData = async () => {
+        try {
+            // সরাসরি getDoc ব্যবহার করা হয়েছে যাতে fast লোড হয়
+            const userSnap = await getDoc(doc(db, "users", uid));
+            if (!userSnap.exists()) return;
+            
+            const userData = userSnap.data();
+            const chotoID = userData.userId || "";
+            
+            // কুয়েরি সেটআপ
+            const qG = query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+            const qF = query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+            
+            // রেফারেল কুয়েরি: সরাসরি users কালেকশন থেকে (তোর বাকি সব ফাইলের মতো)
+            const qR = query(collection(db, "users"), where("referredBy", "==", chotoID), where("hasSoldFirstAccount", "==", true));
+            
+            const qW = query(collection(db, "withdrawals"), where("userId", "==", chotoID));
+            
+            const [gs, fs, rs, ws] = await Promise.all([getDocs(qG), getDocs(qF), getDocs(qR), getDocs(qW)]);
+            
+            let income = 0;
+            gs.forEach(d => income += Number(d.data().price || 0));
+            fs.forEach(d => income += Number(d.data().price || 0));
+            
+            // রেফার ইনকাম ক্যালকুলেশন (৫ টাকা করে)
+            let referIncome = rs.size * 5;
+            
+            let withdrawn = 0;
+            ws.forEach(d => withdrawn += Number(d.data().amount || 0));
+            
+            // ফাইনাল ব্যালেন্স ক্যালকুলেশন
+            liveBalance = (startBonus + income + referIncome) - withdrawn;
+            
+            if (balDisplay) {
+                balDisplay.innerText = "৳" + liveBalance.toFixed(2);
+            }
+        } catch (e) { console.error("Sync Error:", e); }
+    };
+    
+    // রিয়েলটাইম লিসেনার
+    onSnapshot(collection(db, "withdrawals"), syncData);
+    onSnapshot(collection(db, "gmail_sales"), syncData);
+    onSnapshot(collection(db, "fb_sales"), syncData);
+    onSnapshot(collection(db, "users"), syncData);
+    syncData();
+}
     window.processWithdraw = async () => {
         const amountField = document.getElementById('withdraw-amount');
         const numberField = document.getElementById('receiver-number');
@@ -210,7 +231,7 @@
             return;
         }
         if (amount > liveBalance) {
-            alert(`আপনার ব্যালেন্স কম। বর্তমান ব্যালেন্স: ৳${liveBalance.toFixed(2)}`);
+            alert(`আপনার বর্তমান ব্যালেন্স: ৳${liveBalance.toFixed(2)}। যা 50 টাকার চেয়ে কম । তাই উইথড্র দিতে পারবেন না । `);
             return;
         }
         if (number.length < 11) {
