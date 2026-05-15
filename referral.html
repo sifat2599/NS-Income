@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Refer & Earn - NS Income</title>
+    <meta name="description" content="NS Income - বাংলাদেশের সেরা ডিজিটাল মার্কেটপ্লেস। জিমেইল ও ফেসবুক অ্যাকাউন্ট সেল করে দ্রুত বিকাশ বা নগদে পেমেন্ট বুঝে নিন।">
+<meta name="keywords" content="NS Income, ns income, ns income netlify, gmail sell bangladesh, facebook account sell bd, earn money online bd">
+<meta name="author" content="Rakibul Hasan SîFåT">
+
+<meta property="og:title" content="NS Income - Premium Digital Marketplace">
+<meta property="og:description" content="নিরাপদে আপনার ডিজিটাল অ্যাকাউন্ট সেল করুন এবং দ্রুত পেমেন্ট বুঝে নিন।">
+<meta property="og:image" content="https://ns-income.netlify.app/logo.png">
+<meta property="og:url" content="https://ns-income.netlify.app">
+<meta property="og:type" content="website">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --primary: #1877f2; --bg: #f3f4f6; }
@@ -195,7 +204,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, collection, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, onSnapshot, collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -213,46 +222,62 @@
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // ইউজারের নিজস্ব তথ্য লোড করা
+            // রাস্তা ১: সেল চেক করে অটোমেটিক ডাটাবেস আপডেট করা (Background Check)
+            checkFirstSaleAndPushStatus(user.uid);
+
             onSnapshot(doc(db, "users", user.uid), (snap) => {
                 if (snap.exists()) {
                     const data = snap.data();
-                    // যদি userId না থাকে তবে uid এর প্রথম ৬ অক্ষর রেফার কোড হিসেবে কাজ করবে
-                    const code = data.userId || user.uid.substring(0, 6).toUpperCase();
+                    const code = data.userId || "";
                     
                     document.getElementById('myCode').innerText = code;
-                    // রেফারেল লিংকে এখন অটোমেটিক ডোমেইন নেম সেট হবে
                     document.getElementById('myLink').innerText = window.location.origin + "/register.html?ref=" + code;
                     
-                    // সাকসেসফুল রেফার এবং ইনকাম ডাটাবেস থেকে রিয়েলটাইম আসবে
-                    document.getElementById('totalRefer').innerText = data.referCount || 0;
-                    document.getElementById('referEarnings').innerText = "৳" + (data.referEarnings || 0).toFixed(2);
-
-                    // রেফারেল মেম্বারদের লিস্ট লোড করার অটোমেশন
-                    loadReferralList(code);
+                    // রাস্তা ২: সরাসরি true স্ট্যাটাস দেখে লিস্ট ও ব্যালেন্স লোড করা
+                    loadReferralSystem(code);
                 }
             });
         }
     });
 
-    function loadReferralList(myCode) {
-        // এই কুয়েরিটি অটোমেটিক খুঁজে বের করবে কারা তোমার কোড ব্যবহার করেছে
+    // --- অটোমেশন লজিক: Approved সেল থাকলে true করে দিবে ---
+    async function checkFirstSaleAndPushStatus(uid) {
+        try {
+            const userRef = doc(db, "users", uid);
+            const gQ = query(collection(db, "gmail_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+            const fQ = query(collection(db, "fb_sales"), where("userId", "==", uid), where("status", "==", "Approved"));
+            
+            const [gSnap, fSnap] = await Promise.all([getDocs(gQ), getDocs(fQ)]);
+
+            // যদি অন্তত একটি সেল অ্যাপ্রুভড থাকে, ডাটাবেসে true পাঠাবে
+            if (!gSnap.empty || !fSnap.empty) {
+                await updateDoc(userRef, { hasSoldFirstAccount: true });
+            }
+        } catch (e) { console.error("Auto-Status Error:", e); }
+    }
+
+    function loadReferralSystem(myCode) {
         const q = query(collection(db, "users"), where("referredBy", "==", myCode));
         
         onSnapshot(q, (snapshot) => {
             const listDiv = document.getElementById('referralList');
+            let successCount = 0;
             
             if (snapshot.empty) {
                 listDiv.innerHTML = `<p style="text-align:center; color:#9ca3af; font-size:12px;">No members joined yet</p>`;
+                document.getElementById('totalRefer').innerText = "0";
+                document.getElementById('referEarnings').innerText = "৳0.00";
                 return;
             }
             
             listDiv.innerHTML = "";
-            snapshot.forEach(doc => {
-                const member = doc.data();
-                
-                // অটোমেশন লজিক: প্রথম সেল সফল হলে স্ট্যাটাস Success হবে
+            snapshot.forEach(docSnap => {
+                const member = docSnap.data();
+                // এখানে ২টা রাস্তাই কাভার হচ্ছে: অটোমেটিক true হোক বা ম্যানুয়াল, কোড শুধু true খুঁজবে
                 const isSuccess = member.hasSoldFirstAccount === true;
+                
+                if (isSuccess) successCount++;
+
                 const statusClass = isSuccess ? "status-success" : "status-pending";
                 const statusText = isSuccess ? "Success" : "Pending";
 
@@ -266,6 +291,10 @@
                     </div>
                 `;
             });
+
+            // ফাইনাল ক্যালকুলেশন (৫ টাকা করে প্রতি সাকসেস মেম্বার)
+            document.getElementById('totalRefer').innerText = successCount;
+            document.getElementById('referEarnings').innerText = "৳" + (successCount * 5).toFixed(2);
         });
     }
 
@@ -274,31 +303,14 @@
         navigator.clipboard.writeText(code).then(() => alert("Referral Code Copied!"));
     };
 
-window.copyLink = async () => {
-    const link = document.getElementById('myLink').innerText;
-    const shareData = {
-        title: 'NS Income',
-        text: 'Join NS Income and start earning money! My Referral Link:',
-        url: link
-    };
-    
-    try {
-        // ১. অটোমেটিক ক্লিপবোর্ডে কপি হবে
-        await navigator.clipboard.writeText(link);
-        
-        // ২. মোবাইল বা পিসি-র নেটিভ শেয়ার অপশন ওপেন হবে (FB, WhatsApp, Insta...)
+    window.copyLink = async () => {
+        const link = document.getElementById('myLink').innerText;
         if (navigator.share) {
-            await navigator.share(shareData);
+            await navigator.share({ title: 'NS Income', url: link });
         } else {
-            // শেয়ার সাপোর্ট না করলে শুধু অ্যালার্ট দিবে
-            alert("Referral Link Copied!");
+            navigator.clipboard.writeText(link).then(() => alert("Referral Link Copied!"));
         }
-    } catch (err) {
-        console.log("Error sharing:", err);
-        // ক্লিপবোর্ড ফেল করলে ম্যানুয়ালি কপি করার চেষ্টা
-        alert("Referral Link Copied!");
-    }
-};
+    };
 </script>
 
 <footer style="padding: 30px; text-align: center; color: blue; font-size: 14px;">
