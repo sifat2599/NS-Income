@@ -445,6 +445,20 @@
                     if (document.getElementById('total-withdrawn-display'))
                         document.getElementById('total-withdrawn-display').innerText = "৳" + successWithdrawOnly.toFixed(2);
                     
+                    // ====================================================
+                    // 🔥 সিফাতের লাইভ ডাটাবেস অটো-সিঙ্ক লজিক 🔥
+                    // স্ক্রিনের রিয়েল ক্যালকুলেশন সরাসরি ফায়ারবেসের users ফিল্ডে অটো সেভ হবে
+                    if (typeof currentUser !== 'undefined' && currentUser) {
+                        await updateDoc(doc(db, "users", currentUser.uid), {
+                            balance: Number(currentBalance.toFixed(2))
+                        });
+                    } else if (typeof uid !== 'undefined' && uid) {
+                        await updateDoc(doc(db, "users", uid), {
+                            balance: Number(currentBalance.toFixed(2))
+                        });
+                    }
+                    // ====================================================
+                    
                 } catch (e) { console.error("Balance Error:", e); }
             };
             
